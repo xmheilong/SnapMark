@@ -13,6 +13,8 @@
     "clickEffectType": "Klickeffekttyp",
     "scale": "Skalierung",
     "speed": "Geschwindigkeit",
+    "primaryColor": "Primärfarbe",
+    "secondaryColor": "Sekundärfarbe",
     "effects": {
       "ripple": "Welle",
       "firework": "Feuerwerk",
@@ -26,6 +28,8 @@
       "typeChanged": "Klickeffekt geändert zu {{type}}",
       "scaleUpdated": "Skalierung aktualisiert",
       "speedUpdated": "Animationsgeschwindigkeit aktualisiert",
+      "primaryColorUpdated": "Primärfarbe aktualisiert",
+      "secondaryColorUpdated": "Sekundärfarbe aktualisiert",
       "saveFailed": "Einstellungen konnten nicht gespeichert werden",
       "loadFailed": "Einstellungen konnten nicht geladen werden",
       "vipOnly": "Der Klickeffekttyp ist eine Premium-Funktion"

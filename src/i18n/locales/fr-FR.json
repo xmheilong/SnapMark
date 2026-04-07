@@ -13,6 +13,8 @@
     "clickEffectType": "Type d'effet de clic",
     "scale": "Échelle",
     "speed": "Vitesse",
+    "primaryColor": "Couleur principale",
+    "secondaryColor": "Couleur secondaire",
     "effects": {
       "ripple": "Ondulation",
       "firework": "Feu d'artifice",
@@ -26,6 +28,8 @@
       "typeChanged": "Effet de clic changé en {{type}}",
       "scaleUpdated": "Échelle mise à jour",
       "speedUpdated": "Vitesse d'animation mise à jour",
+      "primaryColorUpdated": "Couleur principale mise à jour",
+      "secondaryColorUpdated": "Couleur secondaire mise à jour",
       "saveFailed": "Échec de la sauvegarde des paramètres",
       "loadFailed": "Échec du chargement des paramètres",
       "vipOnly": "Le type d'effet de clic est une fonctionnalité premium"

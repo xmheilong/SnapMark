@@ -36,6 +36,8 @@ export interface MouseSettings {
     clickEffectType?: 'ripple' | 'firework' | 'spiral' | 'circleStroke' | 'rectStroke';
     scale?: number;
     speed?: number;
+    primaryColor?: string;
+    secondaryColor?: string;
 }
 
 // 键盘设置接口

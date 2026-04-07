@@ -13,6 +13,8 @@
     "clickEffectType": "클릭 효과 유형",
     "scale": "크기",
     "speed": "속도",
+    "primaryColor": "기본 색상",
+    "secondaryColor": "보조 색상",
     "effects": {
       "ripple": "물결",
       "firework": "불꽃놀이",
@@ -26,6 +28,8 @@
       "typeChanged": "클릭 효과가 {{type}}(으)로 변경되었습니다",
       "scaleUpdated": "크기가 업데이트되었습니다",
       "speedUpdated": "애니메이션 속도가 업데이트되었습니다",
+      "primaryColorUpdated": "기본 색상이 업데이트되었습니다",
+      "secondaryColorUpdated": "보조 색상이 업데이트되었습니다",
       "saveFailed": "설정 저장에 실패했습니다",
       "loadFailed": "설정 로드에 실패했습니다",
       "vipOnly": "클릭 효과 유형은 프리미엄 기능입니다"

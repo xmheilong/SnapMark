@@ -13,6 +13,8 @@
     "clickEffectType": "クリックエフェクトの種類",
     "scale": "スケール",
     "speed": "速度",
+    "primaryColor": "メインカラー",
+    "secondaryColor": "サブカラー",
     "effects": {
       "ripple": "波紋",
       "firework": "花火",
@@ -26,6 +28,8 @@
       "typeChanged": "クリックエフェクトを {{type}} に変更しました",
       "scaleUpdated": "スケールが更新されました",
       "speedUpdated": "アニメーション速度が更新されました",
+      "primaryColorUpdated": "メインカラーが更新されました",
+      "secondaryColorUpdated": "サブカラーが更新されました",
       "saveFailed": "設定の保存に失敗しました",
       "loadFailed": "設定の読み込みに失敗しました",
       "vipOnly": "クリックエフェクトの種類はプレミアム機能です"

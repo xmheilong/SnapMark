@@ -53,15 +53,17 @@ const interCircle = new mojs.Shape({
     opacity: 0.7,
 });
 
-function clickRippleAnimate(e: MouseEvent, mouseSettings: MouseSettings, parent: HTMLElement = document.body, scale?: number, speed?: number){
+function clickRippleAnimate(e: MouseEvent, mouseSettings: MouseSettings, parent: HTMLElement = document.body, scale?: number, speed?: number, primaryColor?: string, secondaryColor?: string){
     const finalScale = scale ?? mouseSettings.scale ?? 1.0;
     const finalSpeed = speed ?? mouseSettings.speed ?? 1.0;
+    const finalPrimaryColor = primaryColor ?? mouseSettings.primaryColor;
+    const finalSecondaryColor = secondaryColor ?? mouseSettings.secondaryColor;
     outercircle.parent = parent;
     interCircle.parent = parent;
     outercircle.setSpeed(finalSpeed);
     interCircle.setSpeed(finalSpeed);
-    outercircle.tune({ x: e.pageX, y: e.pageY, scale: {0:finalScale} }).replay();
-    interCircle.tune({ x: e.pageX, y: e.pageY, scale: {0:finalScale} }).replay();
+    outercircle.tune({ x: e.pageX, y: e.pageY, scale: {0:finalScale}, ...(finalPrimaryColor ? { stroke: finalPrimaryColor } : {}) }).replay();
+    interCircle.tune({ x: e.pageX, y: e.pageY, scale: {0:finalScale}, ...(finalSecondaryColor ? { stroke: finalSecondaryColor } : {}) }).replay();
 }
 
 const burst1 = new mojs.Burst({
@@ -74,12 +76,13 @@ const burst1 = new mojs.Burst({
     }
 });
 
-function clickFirework(e: MouseEvent, mouseSettings: MouseSettings, parent: HTMLElement = document.body, scale?: number, speed?: number){
+function clickFirework(e: MouseEvent, mouseSettings: MouseSettings, parent: HTMLElement = document.body, scale?: number, speed?: number, primaryColor?: string){
     const finalScale = scale ?? mouseSettings.scale ?? 1.0;
     const finalSpeed = speed ?? mouseSettings.speed ?? 1.0;
+    const finalPrimaryColor = primaryColor ?? mouseSettings.primaryColor;
     burst1.parent = parent;
     burst1.setSpeed(finalSpeed);
-    burst1.tune({ x: e.pageX, y: e.pageY, scale: finalScale }).replay();
+    burst1.tune({ x: e.pageX, y: e.pageY, scale: finalScale, ...(finalPrimaryColor ? { children: { fill: finalPrimaryColor } } : {}) }).replay();
 }
 
 const burst2 = new mojs.Burst({
@@ -91,12 +94,13 @@ const burst2 = new mojs.Burst({
     opacity: {1: 0},
 });
 
-function clickSpiral(e: MouseEvent, mouseSettings: MouseSettings, parent: HTMLElement = document.body, scale?: number, speed?: number){
+function clickSpiral(e: MouseEvent, mouseSettings: MouseSettings, parent: HTMLElement = document.body, scale?: number, speed?: number, primaryColor?: string){
     const finalScale = scale ?? mouseSettings.scale ?? 1.0;
     const finalSpeed = speed ?? mouseSettings.speed ?? 1.0;
+    const finalPrimaryColor = primaryColor ?? mouseSettings.primaryColor;
     burst2.parent = parent;
     burst2.setSpeed(finalSpeed);
-    burst2.tune({ x: e.pageX, y: e.pageY, scale: finalScale }).replay();
+    burst2.tune({ x: e.pageX, y: e.pageY, scale: finalScale, ...(finalPrimaryColor ? { children: { fill: finalPrimaryColor } } : {}) }).replay();
 }
 
 
@@ -119,12 +123,14 @@ const circleStroke = new mojs.Shape({
     stroke: 'lightgreen'
 })
 
-function clickCircleStroke(e: MouseEvent, mouseSettings: MouseSettings, parent: HTMLElement = document.body, scale?: number, speed?: number){
+function clickCircleStroke(e: MouseEvent, mouseSettings: MouseSettings, parent: HTMLElement = document.body, scale?: number, speed?: number, primaryColor?: string, secondaryColor?: string){
     const finalScale = scale ?? mouseSettings.scale ?? 1.0;
     const finalSpeed = speed ?? mouseSettings.speed ?? 1.0;
+    const finalPrimaryColor = primaryColor ?? mouseSettings.primaryColor;
+    const finalSecondaryColor = secondaryColor ?? mouseSettings.secondaryColor;
     circleStroke.parent = parent;
     circleStroke.setSpeed(1.5 * finalSpeed);
-    circleStroke.tune({ x: e.pageX, y: e.pageY, scale: finalScale }).replay();
+    circleStroke.tune({ x: e.pageX, y: e.pageY, scale: finalScale, ...(finalPrimaryColor ? { stroke: finalPrimaryColor } : {}), ...(finalSecondaryColor ? { then: [{ stroke: finalSecondaryColor }] } : {}) }).replay();
 }
 
 
@@ -146,12 +152,14 @@ const rectStroke = new mojs.Shape({
     stroke: 'lightgreen'
 })
 
-function clickRectStroke(e: MouseEvent, mouseSettings: MouseSettings, parent: HTMLElement = document.body, scale?: number, speed?: number){
+function clickRectStroke(e: MouseEvent, mouseSettings: MouseSettings, parent: HTMLElement = document.body, scale?: number, speed?: number, primaryColor?: string, secondaryColor?: string){
     const finalScale = scale ?? mouseSettings.scale ?? 1.0;
     const finalSpeed = speed ?? mouseSettings.speed ?? 1.0;
+    const finalPrimaryColor = primaryColor ?? mouseSettings.primaryColor;
+    const finalSecondaryColor = secondaryColor ?? mouseSettings.secondaryColor;
     rectStroke.parent = parent;
     rectStroke.setSpeed(1.5 * finalSpeed);
-    rectStroke.tune({ x: e.pageX, y: e.pageY, scale: finalScale }).replay();
+    rectStroke.tune({ x: e.pageX, y: e.pageY, scale: finalScale, ...(finalPrimaryColor ? { stroke: finalPrimaryColor } : {}), ...(finalSecondaryColor ? { then: [{ stroke: finalSecondaryColor }] } : {}) }).replay();
 }
 
 export { clickRippleAnimate, clickFirework, clickSpiral, clickCircleStroke, clickRectStroke };

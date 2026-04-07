@@ -13,6 +13,8 @@
     "clickEffectType": "點擊特效類型",
     "scale": "縮放",
     "speed": "速率",
+    "primaryColor": "主顏色",
+    "secondaryColor": "副顏色",
     "effects": {
       "ripple": "水波紋",
       "firework": "煙火",
@@ -26,6 +28,8 @@
       "typeChanged": "點擊特效已切換為 {{type}}",
       "scaleUpdated": "縮放比例已更新",
       "speedUpdated": "動畫速度已更新",
+      "primaryColorUpdated": "主顏色已更新",
+      "secondaryColorUpdated": "副顏色已更新",
       "saveFailed": "儲存設定失敗",
       "loadFailed": "載入設定失敗",
       "vipOnly": "點擊特效類型為會員專享功能"

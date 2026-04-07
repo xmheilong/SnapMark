@@ -187,7 +187,7 @@ fn create_motion_board(
     .visible(false)
     .visible_on_all_workspaces(true)
     .resizable(false)
-    .devtools(false)
+    .devtools(true)
     .build()?;
 
     // 必须创建完窗口后再移动

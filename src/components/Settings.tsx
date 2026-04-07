@@ -563,6 +563,10 @@ function 鼠标设置页面() {
     const [clickEffectType, setClickEffectType] = useState<'ripple' | 'firework' | 'spiral' | 'circleStroke' | 'rectStroke'>('ripple');
     const [scale, setScale] = useState(1.0);
     const [speed, setSpeed] = useState(1.0);
+    const [primaryColor, setPrimaryColor] = useState('cyan');
+    const [secondaryColor, setSecondaryColor] = useState('magenta');
+    const [primaryColorAnchor, setPrimaryColorAnchor] = useState<HTMLElement | null>(null);
+    const [secondaryColorAnchor, setSecondaryColorAnchor] = useState<HTMLElement | null>(null);
 
     const { notify } = useSnackbar();
 
@@ -576,6 +580,8 @@ function 鼠标设置页面() {
                 setClickEffectType(settings.mouse?.clickEffectType || 'ripple');
                 setScale(settings.mouse?.scale ?? 1.0);
                 setSpeed(settings.mouse?.speed ?? 1.0);
+                setPrimaryColor(settings.mouse?.primaryColor ?? 'cyan');
+                setSecondaryColor(settings.mouse?.secondaryColor ?? 'magenta');
             } catch (error) {
                 console.error('加载鼠标设置失败:', error);
                 notify(t('mouse.messages.loadFailed'), 'error');
@@ -698,6 +704,60 @@ function 鼠标设置页面() {
         console.log('Speed change committed:', value);
     };
 
+    // 处理主颜色变化
+    const handlePrimaryColorChange = async (color: any) => {
+        const rgbaColor = color.rgba ? `rgba(${color.rgba.r},${color.rgba.g},${color.rgba.b},${color.rgba.a})` : color.hex;
+        setPrimaryColor(rgbaColor);
+
+        try {
+            const currentSettings = await getSettings();
+            await updateSettings({
+                mouse: {
+                    ...currentSettings.mouse,
+                    primaryColor: rgbaColor,
+                }
+            });
+        } catch (error) {
+            console.error('更新主颜色失败:', error);
+        }
+    };
+
+    const handlePrimaryColorChangeComplete = async () => {
+        try {
+            notify(t('mouse.messages.primaryColorUpdated'), 'success');
+        } catch (error) {
+            console.error('保存主颜色失败:', error);
+            notify(t('mouse.messages.saveFailed'), 'error');
+        }
+    };
+
+    // 处理副颜色变化
+    const handleSecondaryColorChange = async (color: any) => {
+        const rgbaColor = color.rgba ? `rgba(${color.rgba.r},${color.rgba.g},${color.rgba.b},${color.rgba.a})` : color.hex;
+        setSecondaryColor(rgbaColor);
+
+        try {
+            const currentSettings = await getSettings();
+            await updateSettings({
+                mouse: {
+                    ...currentSettings.mouse,
+                    secondaryColor: rgbaColor,
+                }
+            });
+        } catch (error) {
+            console.error('更新副颜色失败:', error);
+        }
+    };
+
+    const handleSecondaryColorChangeComplete = async () => {
+        try {
+            notify(t('mouse.messages.secondaryColorUpdated'), 'success');
+        } catch (error) {
+            console.error('保存副颜色失败:', error);
+            notify(t('mouse.messages.saveFailed'), 'error');
+        }
+    };
+
     return (
         <Box>
             <Typography variant="h5" sx={{ m: 1, mb: 3, display: "block" }}>{t('mouse.title')}</Typography>
@@ -814,12 +874,117 @@ function 鼠标设置页面() {
                             </>
                         }
                     />
+
+                    {/* 主颜色 */}
+                    <SettingField
+                        label={t('mouse.primaryColor')}
+                        value={
+                            <>
+                                <span>
+                                    <Button
+                                        variant="outlined"
+                                        onClick={(e) => setPrimaryColorAnchor(e.currentTarget)}
+                                        sx={{
+                                            width: '8rem',
+                                            height: '3rem',
+                                            border: '2px solid #ccc',
+                                            backgroundImage: `
+                                                linear-gradient(45deg, #ccc 25%, transparent 25%),
+                                                linear-gradient(-45deg, #ccc 25%, transparent 25%),
+                                                linear-gradient(45deg, transparent 75%, #ccc 75%),
+                                                linear-gradient(-45deg, transparent 75%, #ccc 75%)
+                                            `,
+                                            backgroundSize: '10px 10px',
+                                            backgroundPosition: '0 0, 0 5px, 5px -5px, -5px 0px',
+                                            position: 'relative',
+                                            overflow: 'hidden',
+                                            '&::before': {
+                                                content: '""',
+                                                position: 'absolute',
+                                                top: 0,
+                                                left: 0,
+                                                right: 0,
+                                                bottom: 0,
+                                                backgroundColor: primaryColor,
+                                            },
+                                        }}
+                                    />
+                                </span>
+                                <Popover
+                                    open={Boolean(primaryColorAnchor)}
+                                    anchorEl={primaryColorAnchor}
+                                    onClose={() => {
+                                        setPrimaryColorAnchor(null);
+                                        handlePrimaryColorChangeComplete();
+                                    }}
+                                    anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+                                >
+                                    <Sketch
+                                        color={rgbaStringToHsva(primaryColor)}
+                                        onChange={handlePrimaryColorChange}
+                                    />
+                                </Popover>
+                            </>
+                        }
+                    />
+
+                    {/* 副颜色 */}
+                    <SettingField
+                        label={t('mouse.secondaryColor')}
+                        value={
+                            <>
+                                <span>
+                                    <Button
+                                        variant="outlined"
+                                        onClick={(e) => setSecondaryColorAnchor(e.currentTarget)}
+                                        sx={{
+                                            width: '8rem',
+                                            height: '3rem',
+                                            border: '2px solid #ccc',
+                                            backgroundImage: `
+                                                linear-gradient(45deg, #ccc 25%, transparent 25%),
+                                                linear-gradient(-45deg, #ccc 25%, transparent 25%),
+                                                linear-gradient(45deg, transparent 75%, #ccc 75%),
+                                                linear-gradient(-45deg, transparent 75%, #ccc 75%)
+                                            `,
+                                            backgroundSize: '10px 10px',
+                                            backgroundPosition: '0 0, 0 5px, 5px -5px, -5px 0px',
+                                            position: 'relative',
+                                            overflow: 'hidden',
+                                            '&::before': {
+                                                content: '""',
+                                                position: 'absolute',
+                                                top: 0,
+                                                left: 0,
+                                                right: 0,
+                                                bottom: 0,
+                                                backgroundColor: secondaryColor,
+                                            },
+                                        }}
+                                    />
+                                </span>
+                                <Popover
+                                    open={Boolean(secondaryColorAnchor)}
+                                    anchorEl={secondaryColorAnchor}
+                                    onClose={() => {
+                                        setSecondaryColorAnchor(null);
+                                        handleSecondaryColorChangeComplete();
+                                    }}
+                                    anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+                                >
+                                    <Sketch
+                                        color={rgbaStringToHsva(secondaryColor)}
+                                        onChange={handleSecondaryColorChange}
+                                    />
+                                </Popover>
+                            </>
+                        }
+                    />
                 </Stack>
             </Box>
         </Box>
     );
 }
-
 
 function 绘图设置页面() {
     const { t } = useTranslation();

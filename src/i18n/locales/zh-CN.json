@@ -13,6 +13,8 @@
     "clickEffectType": "点击特效类型",
     "scale": "缩放",
     "speed": "速率",
+    "primaryColor": "主颜色",
+    "secondaryColor": "副颜色",
     "effects": {
       "ripple": "水波纹",
       "firework": "烟花",
@@ -26,6 +28,10 @@
       "typeChanged": "点击特效已切换为 {{type}}",
       "scaleUpdated": "缩放比例已更新",
       "speedUpdated": "动画速度已更新",
+      "primaryColorUpdated": "主颜色已更新",
+      "secondaryColorUpdated": "副颜色已更新",
+      "primaryColorUpdated": "主颜色已更新",
+      "secondaryColorUpdated": "副颜色已更新",
       "saveFailed": "保存设置失败",
       "loadFailed": "加载设置失败",
       "vipOnly": "点击特效类型为会员专享功能"

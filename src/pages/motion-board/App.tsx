@@ -263,6 +263,7 @@ function App() {
               windowY = Math.round((event.payload.y - innerPosition.y) / scaleFactor);
               break;
             default:
+              console.log('Scale factor:', scaleFactor);
               // Windows and others
               windowX = Math.round((event.payload.x - innerPosition.x) / scaleFactor);
               windowY = Math.round((event.payload.y - innerPosition.y) / scaleFactor);

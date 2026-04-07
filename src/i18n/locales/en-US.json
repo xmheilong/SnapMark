@@ -13,6 +13,8 @@
     "clickEffectType": "Click Effect Type",
     "scale": "Scale",
     "speed": "Speed",
+    "primaryColor": "Primary Color",
+    "secondaryColor": "Secondary Color",
     "effects": {
       "ripple": "Ripple",
       "firework": "Firework",
@@ -26,6 +28,10 @@
       "typeChanged": "Click effect changed to {{type}}",
       "scaleUpdated": "Scale updated",
       "speedUpdated": "Speed updated",
+      "primaryColorUpdated": "Primary color updated",
+      "secondaryColorUpdated": "Secondary color updated",
+      "primaryColorUpdated": "Primary color updated",
+      "secondaryColorUpdated": "Secondary color updated",
       "saveFailed": "Failed to save settings",
       "loadFailed": "Failed to load settings",
       "vipOnly": "Click effect type is a VIP feature"

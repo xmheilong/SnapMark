@@ -34,6 +34,8 @@ export function useMouseSettings() {
     const [mouseSettings, setMouseSettings] = useState<MouseSettings>({
         enableClickEffect: false,
         clickEffectType: 'ripple',
+        primaryColor: 'cyan',
+        secondaryColor: 'magenta',
     });
     const [loading, setLoading] = useState(true);
 
