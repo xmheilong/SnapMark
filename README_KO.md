@@ -48,6 +48,11 @@
   </a>
   <img src="https://img.shields.io/badge/language-TypeScript%20%7C%20Rust-blue?style=for-the-badge">
   <img src="https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge">
+  <br/>
+
+  <a href="https://www.producthunt.com/products/penio/launches/penio?embed=true&amp;utm_source=badge-featured&amp;utm_medium=badge&amp;utm_campaign=badge-penio" target="_blank" rel="noopener noreferrer">
+	<img alt="Penio - A screen drawing application to add mouse click effects  | Product Hunt" width="250" height="54" src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1067029&amp;theme=light&amp;t=1772499118772">
+  </a>
 </p>
 
 ---
@@ -209,3 +214,5 @@ penio/
 - **GitHub Issues**: [문제 보고](https://github.com/game1024/Penio/issues)
 
 ---
+
+[![Star History Chart](https://api.star-history.com/svg?repos=game1024/Penio&type=date&legend=top-left)](https://www.star-history.com/#game1024/Penio&type=date&legend=top-left)
