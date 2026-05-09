@@ -1,4 +1,10 @@
 <p align="center">
+  <a href="https://ref.365tz87989.com/?r=RWQVZD">
+<img alt="Gemini_Generated_Image_n3p4rln3p4rln3p4" src="https://github.com/user-attachments/assets/3dcf6b88-715c-43d1-99b4-6dc21e5ea23e" />
+  </a>
+</p>
+
+<p align="center">
   <a href="README.md">简体中文</a> | <a href="README_EN.md">English</a> | <a href="README_JA.md">日本語</a> | <a href="README_KO.md">한국어</a> | <a href="README_FR.md">Français</a> | <a href="README_DE.md">Deutsch</a>
 </p>
 
