@@ -142,19 +142,8 @@ const LayerUI = ({
   const device = useDevice();
   const tunnels = useInitializeTunnels();
 
-  const [toolbarVisible, setToolbarVisible] = React.useState(true);
   const [toastMsg, setToastMsg] = React.useState<string | null>(null);
-
-  React.useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "h" && (e.ctrlKey || e.metaKey)) {
-        e.preventDefault();
-        setToolbarVisible((prev) => !prev);
-      }
-    };
-    document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
-  }, []);
+  const toolbarVisible = appState.toolbarVisible;
 
   // show toast when toolbar toggled
   const prevVisibleRef = React.useRef(toolbarVisible);

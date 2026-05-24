@@ -878,6 +878,12 @@ function 鼠标设置页面() {
 
             <Box sx={{ p: 2, backgroundColor: '#ffffff', borderRadius: 2 }}>
                 <Stack direction="column" spacing={3} sx={{ p: 2 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                      <Box sx={{ flex: 1, borderTop: '1px solid #e0e0e0' }} />
+                      <Typography variant="caption" sx={{ mx: 1.5, color: '#999' }}>{t('mouse.clickEffect')}</Typography>
+                      <Box sx={{ flex: 1, borderTop: '1px solid #e0e0e0' }} />
+                    </Box>
+
                     <SettingField
                         label={t('mouse.enableClickEffect')}
                         value={
@@ -1095,6 +1101,12 @@ function 鼠标设置页面() {
                         }
                     />
 
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                      <Box sx={{ flex: 1, borderTop: '1px solid #e0e0e0' }} />
+                      <Typography variant="caption" sx={{ mx: 1.5, color: '#999' }}>{t('mouse.aperture')}</Typography>
+                      <Box sx={{ flex: 1, borderTop: '1px solid #e0e0e0' }} />
+                    </Box>
+
                     {/* 鼠标光圈 */}
                     <SettingField
                         label={t('mouse.enableAperture')}
@@ -1190,6 +1202,7 @@ function 鼠标设置页面() {
 function 绘图设置页面() {
     const { t } = useTranslation();
     const [toggleShortcut, setToggleShortcut] = useState('');
+    const [toolbarShortcut, setToolbarShortcut] = useState('');
     const { notify } = useSnackbar();
 
     // 加载设置
@@ -1198,6 +1211,7 @@ function 绘图设置页面() {
             try {
                 const settings = await getSettings();
                 setToggleShortcut(settings.drawing?.toggleShortcut);
+                setToolbarShortcut(settings.drawing?.toolbarShortcut);
             } catch (error) {
                 console.error('加载绘图设置失败:', error);
                 notify(t('drawing.messages.loadFailed'), 'error');
@@ -1225,6 +1239,25 @@ function 绘图设置页面() {
         }
     };
 
+    // 处理工具栏快捷键变化
+    const handleToolbarShortcutChange = async (shortcut: string) => {
+        setToolbarShortcut(shortcut);
+
+        try {
+            const currentSettings = await getSettings();
+            await updateSettings({
+                drawing: {
+                    ...currentSettings.drawing,
+                    toolbarShortcut: shortcut,
+                }
+            });
+            notify(t('drawing.messages.shortcutUpdated', { shortcut }), 'success');
+        } catch (error) {
+            console.error('保存设置失败:', error);
+            notify(t('drawing.messages.saveFailed', { error: String(error) }), 'error');
+        }
+    };
+
     return (
         <Box>
             <Typography variant="h5" sx={{ m: 1, mb: 3, display: "block" }}>{t('drawing.title')}</Typography>
@@ -1237,6 +1270,14 @@ function 绘图设置页面() {
                             <ShortcutField
                                 value={toggleShortcut}
                                 onChange={handleShortcutChange}
+                            />
+                        } />
+                    <SettingField
+                        label={t('drawing.toolbarShortcut')}
+                        value={
+                            <ShortcutField
+                                value={toolbarShortcut}
+                                onChange={handleToolbarShortcutChange}
                             />
                         } />
                     <SettingField

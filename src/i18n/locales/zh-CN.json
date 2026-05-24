@@ -9,12 +9,14 @@
   },
   "mouse": {
     "title": "鼠标设置",
+    "clickEffect": "点击特效",
     "enableClickEffect": "启用点击特效",
     "clickEffectType": "点击特效类型",
     "scale": "缩放",
     "speed": "速率",
     "primaryColor": "主颜色",
     "secondaryColor": "副颜色",
+    "aperture": "光圈设置",
     "enableAperture": "开启鼠标光圈",
     "apertureStyle": "光圈样式",
     "enableApertureAnimation": "光圈动效",
@@ -86,12 +88,15 @@
     "toggleMode": "切换绘图模式",
     "clearAnnotation": "清空标注",
     "shortcutHelp": "快捷键帮助",
+    "toolbarShortcut": "工具栏快捷键",
     "messages": {
       "shortcutUpdated": "快捷键已设置为 {{shortcut}}",
       "saveFailed": "保存设置失败: {{error}}",
       "loadFailed": "加载设置失败",
       "enterDrawMode": "进入绘制模式",
-      "exitDrawMode": "退出绘制模式"
+      "exitDrawMode": "退出绘制模式",
+      "toolbarShown": "工具栏已显示 ({{shortcut}} 切换)",
+      "toolbarHidden": "工具栏已隐藏 ({{shortcut}} 恢复)"
     }
   },
   "general": {

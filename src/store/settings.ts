@@ -62,6 +62,7 @@ export interface KeyboardSettings {
 // 绘图设置接口
 export interface DrawingSettings {
     toggleShortcut: string;
+    toolbarShortcut: string;
 }
 
 // 应用设置接口
@@ -106,6 +107,7 @@ const defaultSettings: AppSettings = {
     },
     drawing: {
         toggleShortcut: 'Alt+`',
+        toolbarShortcut: 'Alt+H',
     },
 };
 
@@ -167,13 +169,26 @@ export const updateSettings = async (newSettings: Partial<AppSettings>) => {
     if (newSettings.drawing) {
         try {
             await emit('drawing-settings-updated', updatedSettings.drawing);
+
+            // 切换绘图模式快捷键
+            if (currentSettings.drawing.toggleShortcut) {
+                await unregister(currentSettings.drawing.toggleShortcut);
+            }
             if (updatedSettings.drawing.toggleShortcut && updatedSettings.drawing.toggleShortcut != "") {
-                await register(updatedSettings.drawing.toggleShortcut || defaultSettings.drawing.toggleShortcut, async () => {
+                await register(updatedSettings.drawing.toggleShortcut, async () => {
                     await invoke('trigger_drawing_mode');
                 })
             }
 
-            await unregister(currentSettings.drawing.toggleShortcut);
+            // 隐藏/显示工具栏快捷键
+            if (currentSettings.drawing.toolbarShortcut) {
+                await unregister(currentSettings.drawing.toolbarShortcut);
+            }
+            if (updatedSettings.drawing.toolbarShortcut && updatedSettings.drawing.toolbarShortcut != "") {
+                await register(updatedSettings.drawing.toolbarShortcut, async () => {
+                    await emit('toolbar-visibility-toggled');
+                })
+            }
         } catch (error: any) {
             throw error;
         }

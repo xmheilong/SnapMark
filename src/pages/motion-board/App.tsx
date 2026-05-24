@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import "./App.css";
 import "@excalidraw/excalidraw/css/app.scss";
 import "@excalidraw/excalidraw/css/styles.scss";
@@ -33,6 +33,7 @@ import { type } from '@tauri-apps/plugin-os';
 import { Excalidraw } from "@excalidraw/excalidraw";
 import { useMouseSettings } from "../../hooks/useMouseSettings";
 import { useKeyboardSettings } from "../../hooks/useKeyboardSettings";
+import { useDrawingSettings } from "../../hooks/useDrawingSettings";
 import { KeyLabel, MODIFIER_KEY_LIST, IGNORE_KEY_LIST, MOUSE_CLICK_KEYS } from "../../types/ModifierKey";
 import { Alert, Snackbar, Zoom } from "@mui/material";
 import i18n from "../../i18n";
@@ -42,6 +43,7 @@ function App() {
   const { mouseSettings, } = useMouseSettings();
 
   const { keyboardSettings, } = useKeyboardSettings();
+  const { drawingSettings, } = useDrawingSettings();
 
   // 存储鼠标穿透状态
   const [ignoreCursorEvents, setIgnoreCursorEvents] = useState(true);
@@ -361,6 +363,36 @@ function App() {
   }, [ignoreCursorEvents, mouseSettings, keyboardSettings]);
 
   const [snackbar, setSnackbar] = useState<{ open: boolean; message: string }>({ open: false, message: '' });
+
+  const excalidrawAPIRef = useRef<any>(null);
+  const ignoreCursorEventsRef = useRef(ignoreCursorEvents);
+  ignoreCursorEventsRef.current = ignoreCursorEvents;
+
+  // 监听全局快捷键触发的工具栏可见性切换事件
+  useEffect(() => {
+    const setupListener = async () => {
+      const appWindow = getCurrentWindow();
+      const unlisten = await appWindow.listen('toolbar-visibility-toggled', () => {
+        const api = excalidrawAPIRef.current;
+        if (!api) return;
+        const currentState = api.getAppState();
+        const newVisible = !currentState.toolbarVisible;
+        api.updateScene({ appState: { toolbarVisible: newVisible } });
+        setSnackbar({
+          open: true,
+          message: newVisible
+            ? i18n.t('drawing.messages.toolbarShown', { shortcut: drawingSettings.toolbarShortcut })
+            : i18n.t('drawing.messages.toolbarHidden', { shortcut: drawingSettings.toolbarShortcut }),
+        });
+      });
+      return unlisten;
+    };
+    const unlistenPromise = setupListener();
+    return () => {
+      unlistenPromise.then(unlisten => unlisten());
+    };
+  }, [drawingSettings.toolbarShortcut]);
+
   return (
     <>
       <Snackbar
@@ -439,6 +471,9 @@ function App() {
         }} />
 
         {<Excalidraw
+          excalidrawAPI={(api: any) => {
+            excalidrawAPIRef.current = api;
+          }}
           langCode={
             locale === 'zh-CN' ? 'zh-CN' :
             locale === 'ja-JP' ? 'ja-JP' :
@@ -457,6 +492,7 @@ function App() {
               currentItemStrokeColor: 'red',
               currentItemRoundness: "sharp",
               viewBackgroundColor: "transparent",
+              toolbarVisible: true,
               activeTool: {
                 type: "freedraw",
                 locked: true

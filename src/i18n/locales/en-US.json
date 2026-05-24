@@ -9,12 +9,14 @@
   },
   "mouse": {
     "title": "Mouse Settings",
+    "clickEffect": "Click Effect",
     "enableClickEffect": "Enable Click Effect",
     "clickEffectType": "Click Effect Type",
     "scale": "Scale",
     "speed": "Speed",
     "primaryColor": "Primary Color",
     "secondaryColor": "Secondary Color",
+    "aperture": "Aperture",
     "enableAperture": "Enable Cursor Aperture",
     "apertureStyle": "Aperture Style",
     "enableApertureAnimation": "Aperture Animation",
@@ -86,12 +88,15 @@
     "toggleMode": "Toggle Drawing Mode",
     "clearAnnotation": "Clear Annotation",
     "shortcutHelp": "Shortcut Help",
+    "toolbarShortcut": "Toolbar Shortcut",
     "messages": {
       "shortcutUpdated": "Shortcut set to {{shortcut}}",
       "saveFailed": "Failed to save settings: {{error}}",
       "loadFailed": "Failed to load settings",
       "enterDrawMode": "Enter drawing mode",
-      "exitDrawMode": "Exit drawing mode"
+      "exitDrawMode": "Exit drawing mode",
+      "toolbarShown": "Toolbar shown ({{shortcut}} toggle)",
+      "toolbarHidden": "Toolbar hidden ({{shortcut}} restore)"
     }
   },
   "general": {
