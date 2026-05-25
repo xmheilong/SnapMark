@@ -208,8 +208,7 @@ penio/
 
 ## 📮 お問い合わせ
 
-- **ウェブサイト**: https://www.fiofio.cn
-- **メール**: feedback@fiofio.cn
+- **ウェブサイト**: https://github.com/game1024
 - **BiliBili**: [@game1024](https://space.bilibili.com/426988409)
 - **GitHub Issues**: [問題を報告](https://github.com/game1024/Penio/issues)
 

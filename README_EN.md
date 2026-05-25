@@ -214,8 +214,7 @@ You can also support the development via [GitHub Sponsors](https://github.com/sp
 
 ## 📮 Contact
 
-- **Website**: https://www.fiofio.cn
-- **Email**: feedback@fiofio.cn
+- **Website**: https://github.com/game1024
 - **BiliBili**: [@game1024](https://space.bilibili.com/426988409)
 - **GitHub Issues**: [Report Issues](https://github.com/game1024/Penio/issues)
 

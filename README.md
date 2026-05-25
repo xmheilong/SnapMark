@@ -217,8 +217,7 @@ penio/
 
 ## 📮 联系方式
 
-- **官网**: https://www.fiofio.cn
-- **邮箱**: feedback@fiofio.cn
+- **官网**: https://github.com/game1024
 - **BiliBili**: [@game1024](https://space.bilibili.com/426988409)
 - **GitHub Issues**: [报告问题](https://github.com/game1024/Penio/issues)
 

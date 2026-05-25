@@ -208,8 +208,7 @@ penio/
 
 ## 📮 연락처
 
-- **웹사이트**: https://www.fiofio.cn
-- **이메일**: feedback@fiofio.cn
+- **웹사이트**: https://github.com/game1024
 - **BiliBili**: [@game1024](https://space.bilibili.com/426988409)
 - **GitHub Issues**: [문제 보고](https://github.com/game1024/Penio/issues)
 

@@ -208,8 +208,7 @@ Vous pouvez aussi soutenir le développement via [GitHub Sponsors](https://githu
 
 ## 📮 Contact
 
-- **Site web** : https://www.fiofio.cn
-- **Email** : feedback@fiofio.cn
+- **Site web** : https://github.com/game1024
 - **BiliBili** : [@game1024](https://space.bilibili.com/426988409)
 - **GitHub Issues** : [Signaler un problème](https://github.com/game1024/Penio/issues)
 
