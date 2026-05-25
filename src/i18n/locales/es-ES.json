@@ -38,7 +38,10 @@
       "shadow": "Sombra",
       "sparkle": "Brillo",
       "firefly": "Luciérnaga",
-      "ripple": "Onda"
+      "ripple": "Onda",
+      "spinner": "Giro",
+      "swirl": "Remolino",
+      "ray": "Rayo"
     },
     "messages": {
       "enabled": "Efecto de clic activado",

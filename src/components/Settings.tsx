@@ -840,7 +840,7 @@ function 鼠标设置页面() {
         const styleMap: Record<number, ApertureStyle> = {
             0: 'neon', 1: 'golden', 2: 'aurora', 3: 'fire',
             4: 'frost', 5: 'rainbow', 6: 'shadow', 7: 'sparkle',
-            8: 'firefly', 9: 'ripple',
+            8: 'firefly', 9: 'ripple', 10: 'spinner', 11: 'swirl', 12: 'ray',
         };
         const newStyle = styleMap[event.target.value as number];
         setApertureStyle(newStyle);
@@ -867,7 +867,7 @@ function 鼠标设置页面() {
         const valueMap: Record<ApertureStyle, number> = {
             neon: 0, golden: 1, aurora: 2, fire: 3,
             frost: 4, rainbow: 5, shadow: 6, sparkle: 7,
-            firefly: 8, ripple: 9,
+            firefly: 8, ripple: 9, spinner: 10, swirl: 11, ray: 12,
         };
         return valueMap[apertureStyle];
     };
@@ -1190,6 +1190,9 @@ function 鼠标设置页面() {
                                 <MenuItem value={7}>{t('mouse.apertureStyles.sparkle')}</MenuItem>
                                 <MenuItem value={8}>{t('mouse.apertureStyles.firefly')}</MenuItem>
                                 <MenuItem value={9}>{t('mouse.apertureStyles.ripple')}</MenuItem>
+                                <MenuItem value={10}>{t('mouse.apertureStyles.spinner')}</MenuItem>
+                                <MenuItem value={11}>{t('mouse.apertureStyles.swirl')}</MenuItem>
+                                <MenuItem value={12}>{t('mouse.apertureStyles.ray')}</MenuItem>
                             </Select>
                         }
                     />

@@ -38,7 +38,10 @@
       "shadow": "섀도우",
       "sparkle": "스파클",
       "firefly": "반딧불",
-      "ripple": "리플"
+      "ripple": "리플",
+      "spinner": "스피너",
+      "swirl": "소용돌이",
+      "ray": "광선"
     },
     "messages": {
       "enabled": "클릭 효과가 활성화되었습니다",

@@ -38,7 +38,10 @@
       "shadow": "暗影",
       "sparkle": "星芒",
       "firefly": "萤火",
-      "ripple": "涟漪"
+      "ripple": "涟漪",
+      "spinner": "飞轮",
+      "swirl": "漩涡",
+      "ray": "光芒"
     },
     "messages": {
       "enabled": "已启用点击特效",

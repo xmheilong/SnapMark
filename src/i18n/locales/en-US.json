@@ -38,7 +38,10 @@
       "shadow": "Shadow",
       "sparkle": "Sparkle",
       "firefly": "Firefly",
-      "ripple": "Ripple"
+      "ripple": "Ripple",
+      "spinner": "Spinner",
+      "swirl": "Swirl",
+      "ray": "Ray"
     },
     "messages": {
       "enabled": "Click effect enabled",

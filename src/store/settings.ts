@@ -31,7 +31,7 @@ import { useShortcut } from '../hooks/useShortcut';
 let settingsStore: Store | null = null;
 
 // 光圈样式类型
-export type ApertureStyle = 'neon' | 'golden' | 'aurora' | 'fire' | 'frost' | 'rainbow' | 'shadow' | 'sparkle' | 'firefly' | 'ripple';
+export type ApertureStyle = 'neon' | 'golden' | 'aurora' | 'fire' | 'frost' | 'rainbow' | 'shadow' | 'sparkle' | 'firefly' | 'ripple' | 'spinner' | 'swirl' | 'ray';
 
 // 鼠标设置接口
 export interface MouseSettings {

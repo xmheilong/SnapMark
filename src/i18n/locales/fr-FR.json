@@ -38,7 +38,10 @@
       "shadow": "Ombre",
       "sparkle": "Étincelle",
       "firefly": "Luciole",
-      "ripple": "Ondulation"
+      "ripple": "Ondulation",
+      "spinner": "Spirale",
+      "swirl": "Tourbillon",
+      "ray": "Rayon"
     },
     "messages": {
       "enabled": "Effet de clic activé",

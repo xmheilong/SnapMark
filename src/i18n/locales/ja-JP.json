@@ -38,7 +38,10 @@
       "shadow": "シャドウ",
       "sparkle": "スパークル",
       "firefly": "ホタル",
-      "ripple": "リップル"
+      "ripple": "リップル",
+      "spinner": "スピナー",
+      "swirl": "渦巻き",
+      "ray": "光芒"
     },
     "messages": {
       "enabled": "クリックエフェクトが有効になりました",

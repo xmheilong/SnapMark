@@ -38,7 +38,10 @@
       "shadow": "Schatten",
       "sparkle": "Funkeln",
       "firefly": "Glühwürmchen",
-      "ripple": "Welle"
+      "ripple": "Welle",
+      "spinner": "Spinner",
+      "swirl": "Wirbel",
+      "ray": "Strahl"
     },
     "messages": {
       "enabled": "Klickeffekt aktiviert",
