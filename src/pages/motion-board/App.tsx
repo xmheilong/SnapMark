@@ -392,10 +392,12 @@ function App() {
   const [dragStart, setDragStart] = useState<{ x: number; y: number } | null>(null);
   const [isFlashing, setIsFlashing] = useState(false);
   const [isCapturing, setIsCapturing] = useState(false);
+  const [autoEraseEnabled, setAutoEraseEnabled] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const excalidrawAPIRef = useRef<any>(null);
+  const autoEraseTimerRef = useRef<number | null>(null);
   const ignoreCursorEventsRef = useRef(ignoreCursorEvents);
   ignoreCursorEventsRef.current = ignoreCursorEvents;
 
@@ -475,13 +477,61 @@ function App() {
       setSnackbar({ open: true, message: i18n.t('drawing.messages.screenshotStarted') });
     };
 
+    const handleAutoEraseToggle = () => {
+      const newState = !autoEraseEnabled;
+      setAutoEraseEnabled(newState);
+      
+      const api = excalidrawAPIRef.current;
+      if (api) {
+        api.updateScene({ appState: { autoEraseEnabled: newState } });
+      }
+      
+      if (newState) {
+        setSnackbar({ open: true, message: '自动擦除已开启（3秒后自动清除）' });
+      } else {
+        setSnackbar({ open: true, message: '自动擦除已关闭' });
+        if (autoEraseTimerRef.current) {
+          clearTimeout(autoEraseTimerRef.current);
+          autoEraseTimerRef.current = null;
+        }
+      }
+    };
+
     window.addEventListener('keydown', handleKeyDown, true);
     window.addEventListener('screenshot-trigger', handleScreenshotTrigger);
+    window.addEventListener('auto-erase-toggle', handleAutoEraseToggle);
+    
     return () => {
       window.removeEventListener('keydown', handleKeyDown, true);
       window.removeEventListener('screenshot-trigger', handleScreenshotTrigger);
+      window.removeEventListener('auto-erase-toggle', handleAutoEraseToggle);
+      if (autoEraseTimerRef.current) {
+        clearTimeout(autoEraseTimerRef.current);
+      }
     };
-  }, [isScreenshotMode, screenInfo]);
+  }, [isScreenshotMode, screenInfo, autoEraseEnabled]);
+
+  const handleExcalidrawChange = useCallback(() => {
+    if (!autoEraseEnabled) return;
+
+    const api = excalidrawAPIRef.current;
+    if (!api) return;
+
+    const elements = api.getSceneElements();
+    const nonDeletedElements = elements.filter((el: any) => !el.isDeleted);
+    
+    if (nonDeletedElements.length > 0) {
+      if (autoEraseTimerRef.current) {
+        clearTimeout(autoEraseTimerRef.current);
+      }
+      autoEraseTimerRef.current = window.setTimeout(() => {
+        api.updateScene({
+          elements: nonDeletedElements.map((el: any) => ({ ...el, isDeleted: true })),
+        });
+        autoEraseTimerRef.current = null;
+      }, 3000);
+    }
+  }, [autoEraseEnabled]);
 
   useEffect(() => {
     const updateWindowSettings = async () => {
@@ -762,6 +812,7 @@ function App() {
             locale === 'es-ES' ? 'es-ES' :
             'en'
           }
+          onChange={handleExcalidrawChange}
           autoFocus={true}
           initialData={{
             elements: [
@@ -772,6 +823,7 @@ function App() {
               currentItemRoundness: "sharp",
               viewBackgroundColor: "transparent",
               toolbarVisible: true,
+              autoEraseEnabled: false,
               activeTool: {
                 type: "freedraw",
                 locked: true

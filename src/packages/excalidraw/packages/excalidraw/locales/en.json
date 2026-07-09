@@ -296,7 +296,8 @@
     "hand": "Hand (panning tool)",
     "extraTools": "More tools",
     "mermaidToExcalidraw": "Mermaid to Excalidraw",
-    "screenshot": "Screenshot"
+    "screenshot": "Screenshot",
+    "autoErase": "Auto erase after 3s"
   },
   "element": {
     "rectangle": "Rectangle",

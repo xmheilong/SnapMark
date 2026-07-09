@@ -319,13 +319,44 @@ const LayerUI = ({
                                 <path d="M9 2L7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2h-3.17L15 2H9zm3 15c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z"/>
                               </svg>
                             </button>
-                            <PenModeButton
-                              zenModeEnabled={appState.zenModeEnabled}
-                              checked={appState.penMode}
-                              onChange={() => onPenModeToggle(null)}
-                              title={t("toolBar.penMode")}
-                              penDetected={appState.penDetected}
-                            />
+                            <button
+                              className="ToolIcon ToolIcon--tool"
+                              title={t("toolBar.autoErase")}
+                              onClick={() => {
+                                window.dispatchEvent(new CustomEvent("auto-erase-toggle"));
+                              }}
+                              style={{
+                                background: appState.autoEraseEnabled ? "rgba(0,0,0,0.08)" : "none",
+                                border: "none",
+                                cursor: "pointer",
+                                padding: "4px",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                borderRadius: "6px",
+                              }}
+                              onMouseEnter={(e) => {
+                                if (!appState.autoEraseEnabled) {
+                                  (e.currentTarget as HTMLElement).style.background = "rgba(0,0,0,0.08)";
+                                }
+                              }}
+                              onMouseLeave={(e) => {
+                                if (!appState.autoEraseEnabled) {
+                                  (e.currentTarget as HTMLElement).style.background = "none";
+                                }
+                              }}
+                            >
+                              {appState.autoEraseEnabled ? (
+                                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                                  <path d="M19 13H5v-2h14v2zm0-6H5V5h14v2zm0 12H5v-2h14v2z"/>
+                                  <path d="M3 3h18v18H3V3zm2 2v14h14V5H5z"/>
+                                </svg>
+                              ) : (
+                                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                                  <path d="M19 13H5v-2h14v2zm0-6H5V5h14v2zm0 12H5v-2h14v2z"/>
+                                </svg>
+                              )}
+                            </button>
                             <LockButton
                               checked={appState.activeTool.locked}
                               onChange={onLockToggle}
@@ -341,22 +372,6 @@ const LayerUI = ({
                               isMobile
                             />
 
-                            <ShapesSwitcher
-                              appState={appState}
-                              activeTool={appState.activeTool}
-                              UIOptions={UIOptions}
-                              app={app}
-                            />
-                          </Stack.Row>
-                        </Island>
-                        {isCollaborating && (
-                          <Island
-                            style={{
-                              marginLeft: 8,
-                              alignSelf: "center",
-                              height: "fit-content",
-                            }}
-                          >
                             <LaserPointerButton
                               title={t("toolBar.laser")}
                               checked={
@@ -367,8 +382,15 @@ const LayerUI = ({
                               }
                               isMobile
                             />
-                          </Island>
-                        )}
+
+                            <ShapesSwitcher
+                              appState={appState}
+                              activeTool={appState.activeTool}
+                              UIOptions={UIOptions}
+                              app={app}
+                            />
+                          </Stack.Row>
+                        </Island>
                       </Stack.Row>
                     </Stack.Col>
                   </div>

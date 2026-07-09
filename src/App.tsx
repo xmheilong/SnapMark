@@ -30,7 +30,7 @@ import Box from "@mui/material/Box";
 import { useTranslation } from 'react-i18next';
 import i18n from './i18n';
 import { initLocale } from './i18n';
-import { getCurrentWindow } from "@tauri-apps/api/window";
+import { getCurrentWindow, type CloseRequestedEvent } from "@tauri-apps/api/window";
 
 import MouseIcon from '@mui/icons-material/Mouse';
 import KeyboardIcon from '@mui/icons-material/Keyboard';
@@ -99,7 +99,6 @@ function App() {
     initialize().catch(console.error);
   }, [])
 
-  // 监听语言更新，更新托盘菜单
   useEffect(() => {
     const setupListener = async () => {
       const appWindow = getCurrentWindow();
@@ -118,7 +117,7 @@ function App() {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  
+
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     setTabno(params.get('tabno') ? parseInt(params.get('tabno')!) : 1);
@@ -143,6 +142,13 @@ function App() {
 
       document.addEventListener('contextmenu', disableContextMenu, false);
       document.addEventListener('keydown', disableRefresh, false);
+
+      const closeWindow = (e: CloseRequestedEvent) => {
+        e.preventDefault();
+        getCurrentWindow().hide();
+      };
+
+      getCurrentWindow().onCloseRequested(closeWindow);
 
       return () => {
         document.removeEventListener('contextmenu', disableContextMenu, false);

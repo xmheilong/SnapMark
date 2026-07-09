@@ -27,9 +27,17 @@ export type TrayMenuHandler = (menuId: string) => void | Promise<void>;
 
 const TRAY_ID = "PENIO_TRAY";
 let trayCreated = false;
+
+const isMainWindow = async () => {
+    const window = getCurrentWindow();
+    const label = window.label;
+    return label === 'console';
+};
+
 /**
  * 托盘 Hook
  * 在 JS 中创建和管理系统托盘
+ * 只有主窗口（index.html）才能创建托盘，子窗口（motion-board.html）不会创建
  */
 export function useTray() {
     const { isMac } = useOS();
@@ -99,6 +107,10 @@ export function useTray() {
     }
     
     const createTray = async () => {
+        if (!(await isMainWindow())) {
+            return;
+        }
+
         if (trayCreated) {
             const existingTray = await getTrayById();
             if (existingTray) {
