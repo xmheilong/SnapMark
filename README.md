@@ -4,6 +4,8 @@
   </a>
 </p>
 
+> **Forked from [game1024/Penio](https://github.com/game1024/Penio) (MIT License)** — renamed to **SnapMark**, adding rectangle screen capture (copied to clipboard).
+
 <p align="center">
   <a href="README.md">简体中文</a> | <a href="README_EN.md">English</a> | <a href="README_JA.md">日本語</a> | <a href="README_KO.md">한국어</a> | <a href="README_FR.md">Français</a> | <a href="README_DE.md">Deutsch</a>
 </p>

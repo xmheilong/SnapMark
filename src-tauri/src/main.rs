@@ -32,7 +32,7 @@ fn main() {
         }
     }
     
-    if let Err(e) = penio_lib::run() {
+    if let Err(e) = snapmark_lib::run() {
         eprintln!("Error running application: {}", e);
         std::process::exit(1);
     }
