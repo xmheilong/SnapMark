@@ -22,12 +22,13 @@
  * SOFTWARE.
  */
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import "./App.css";
 import "@excalidraw/excalidraw/css/app.scss";
 import "@excalidraw/excalidraw/css/styles.scss";
 import "@excalidraw/excalidraw/fonts/fonts.css";
 import { getCurrentWindow } from "@tauri-apps/api/window";
+import { invoke } from '@tauri-apps/api/core';
 import { clickRippleAnimate, clickFirework, clickSpiral, clickCircleStroke, clickRectStroke } from "./animation/mouse";
 import { type } from '@tauri-apps/plugin-os';
 import { Excalidraw } from "@excalidraw/excalidraw";
@@ -37,6 +38,26 @@ import { useDrawingSettings } from "../../hooks/useDrawingSettings";
 import { KeyLabel, MODIFIER_KEY_LIST, IGNORE_KEY_LIST, MOUSE_CLICK_KEYS } from "../../types/ModifierKey";
 import { Alert, Snackbar, Zoom } from "@mui/material";
 import i18n from "../../i18n";
+
+interface ScreenInfo {
+    screens: Array<{
+        index: number;
+        width: number;
+        height: number;
+        x: number;
+        y: number;
+        is_primary: boolean;
+    }>;
+    total_width: number;
+    total_height: number;
+}
+
+interface Selection {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+}
 
 function App() {
   // 从 store 加载鼠标设置
@@ -364,9 +385,32 @@ function App() {
 
   const [snackbar, setSnackbar] = useState<{ open: boolean; message: string }>({ open: false, message: '' });
 
+  const [isScreenshotMode, setIsScreenshotMode] = useState(false);
+  const [screenInfo, setScreenInfo] = useState<ScreenInfo | null>(null);
+  const [selection, setSelection] = useState<Selection | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStart, setDragStart] = useState<{ x: number; y: number } | null>(null);
+  const [isFlashing, setIsFlashing] = useState(false);
+  const [isCapturing, setIsCapturing] = useState(false);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+
   const excalidrawAPIRef = useRef<any>(null);
   const ignoreCursorEventsRef = useRef(ignoreCursorEvents);
   ignoreCursorEventsRef.current = ignoreCursorEvents;
+
+  const getDefaultSelection = useCallback((): Selection => {
+    if (!screenInfo) {
+        return { x: 0, y: 0, width: 1920, height: 1080 };
+    }
+    const primaryScreen = screenInfo.screens.find(s => s.is_primary) || screenInfo.screens[0];
+    return {
+        x: primaryScreen.x,
+        y: primaryScreen.y,
+        width: primaryScreen.width,
+        height: primaryScreen.height,
+    };
+  }, [screenInfo]);
 
   // 监听全局快捷键触发的工具栏可见性切换事件
   useEffect(() => {
@@ -393,6 +437,239 @@ function App() {
     };
   }, [drawingSettings.toolbarShortcut]);
 
+  useEffect(() => {
+    const loadScreenInfo = async () => {
+        try {
+            const info = await invoke<ScreenInfo>('get_screen_info');
+            setScreenInfo(info);
+        } catch (error) {
+            console.error('Failed to get screen info:', error);
+        }
+    };
+    loadScreenInfo();
+  }, []);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!isScreenshotMode) return;
+      
+      e.preventDefault();
+      e.stopPropagation();
+      
+      if (e.key === 'Escape') {
+          setIsScreenshotMode(false);
+      } else if (e.key === 'Enter') {
+          handleCapture();
+      }
+    };
+
+    const handleScreenshotTrigger = async () => {
+      if (!screenInfo) {
+        const info = await invoke<ScreenInfo>('get_screen_info');
+        setScreenInfo(info);
+        setSelection(getDefaultSelection());
+      } else {
+        setSelection(getDefaultSelection());
+      }
+      setIsScreenshotMode(true);
+      setSnackbar({ open: true, message: i18n.t('drawing.messages.screenshotStarted') });
+    };
+
+    window.addEventListener('keydown', handleKeyDown, true);
+    window.addEventListener('screenshot-trigger', handleScreenshotTrigger);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown, true);
+      window.removeEventListener('screenshot-trigger', handleScreenshotTrigger);
+    };
+  }, [isScreenshotMode, screenInfo]);
+
+  useEffect(() => {
+    const updateWindowSettings = async () => {
+        const appWindow = await getCurrentWindow();
+        const api = excalidrawAPIRef.current;
+        
+        if (isScreenshotMode) {
+            await appWindow.setFocusable(true);
+            await appWindow.setIgnoreCursorEvents(false);
+            await appWindow.setFocus();
+            
+            if (api) {
+                api.updateScene({ appState: { toolbarVisible: false } });
+            }
+        } else {
+            await appWindow.setFocusable(ignoreCursorEvents === false);
+            await appWindow.setIgnoreCursorEvents(ignoreCursorEvents);
+            
+            if (api) {
+                api.updateScene({ appState: { toolbarVisible: true } });
+            }
+        }
+    };
+    
+    updateWindowSettings();
+  }, [isScreenshotMode, ignoreCursorEvents]);
+
+  useEffect(() => {
+    if (!isScreenshotMode) return;
+    
+    const canvas = canvasRef.current;
+    if (!canvas || !selection) return;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = canvas.offsetWidth * dpr;
+    canvas.height = canvas.offsetHeight * dpr;
+    ctx.scale(dpr, dpr);
+
+    const width = canvas.offsetWidth;
+    const height = canvas.offsetHeight;
+
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+    ctx.fillRect(0, 0, width, height);
+
+    ctx.clearRect(selection.x, selection.y, selection.width, selection.height);
+
+    const COLOR = '#4ecdc4';
+    const BORDER_WIDTH = 2;
+    
+    ctx.strokeStyle = COLOR;
+    ctx.lineWidth = BORDER_WIDTH;
+    
+    if (isFlashing) {
+        ctx.shadowColor = COLOR;
+        ctx.shadowBlur = 20;
+    }
+    
+    ctx.strokeRect(
+        selection.x + BORDER_WIDTH / 2,
+        selection.y + BORDER_WIDTH / 2,
+        selection.width - BORDER_WIDTH,
+        selection.height - BORDER_WIDTH
+    );
+    
+    ctx.shadowBlur = 0;
+
+    const cornerSize = 12;
+    ctx.fillStyle = COLOR;
+    
+    ctx.fillRect(selection.x - cornerSize / 2, selection.y - cornerSize / 2, cornerSize, cornerSize);
+    ctx.fillRect(selection.x + selection.width - cornerSize / 2, selection.y - cornerSize / 2, cornerSize, cornerSize);
+    ctx.fillRect(selection.x - cornerSize / 2, selection.y + selection.height - cornerSize / 2, cornerSize, cornerSize);
+    ctx.fillRect(selection.x + selection.width - cornerSize / 2, selection.y + selection.height - cornerSize / 2, cornerSize, cornerSize);
+
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+    ctx.font = '14px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'top';
+    
+    const sizeText = `${selection.width} × ${selection.height}`;
+    const textX = selection.x + 8;
+    const textY = selection.y + 8;
+    
+    const metrics = ctx.measureText(sizeText);
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
+    ctx.fillRect(textX - 4, textY - 4, metrics.width + 8, 24);
+    
+    ctx.fillStyle = '#ffffff';
+    ctx.fillText(sizeText, textX, textY);
+  }, [isScreenshotMode, selection, isFlashing]);
+
+  const handleMouseDown = useCallback((e: React.MouseEvent) => {
+    if (!isScreenshotMode || e.button !== 0) return;
+    
+    const rect = containerRef.current?.getBoundingClientRect();
+    if (!rect) return;
+
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    setIsDragging(true);
+    setDragStart({ x, y });
+    setSelection({ x, y, width: 0, height: 0 });
+  }, [isScreenshotMode]);
+
+  const handleMouseMove = useCallback((e: React.MouseEvent) => {
+    if (!isScreenshotMode || !isDragging || !dragStart) return;
+
+    const rect = containerRef.current?.getBoundingClientRect();
+    if (!rect) return;
+
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    const width = Math.abs(x - dragStart.x);
+    const height = Math.abs(y - dragStart.y);
+    const MIN_SIZE = 10;
+    
+    if (width >= MIN_SIZE && height >= MIN_SIZE) {
+        setSelection({
+            x: Math.min(x, dragStart.x),
+            y: Math.min(y, dragStart.y),
+            width,
+            height,
+        });
+    }
+  }, [isScreenshotMode, isDragging, dragStart]);
+
+  const handleMouseUp = useCallback(() => {
+    if (!isScreenshotMode || !isDragging) return;
+    setIsDragging(false);
+    setDragStart(null);
+
+    const MIN_SIZE = 10;
+    if (selection && selection.width >= MIN_SIZE && selection.height >= MIN_SIZE) {
+        handleCapture();
+    }
+  }, [isScreenshotMode, isDragging, selection]);
+
+  const handleCapture = useCallback(async () => {
+    if (!selection) return;
+
+    try {
+        setIsCapturing(true);
+        
+        await new Promise(resolve => setTimeout(resolve, 50));
+
+        const appWindow = await getCurrentWindow();
+        const windowPosition = await appWindow.innerPosition();
+        const scaleFactor = await appWindow.scaleFactor();
+        
+        const physicalX = Math.round(selection.x * scaleFactor + windowPosition.x);
+        const physicalY = Math.round(selection.y * scaleFactor + windowPosition.y);
+        const physicalWidth = Math.round(selection.width * scaleFactor);
+        const physicalHeight = Math.round(selection.height * scaleFactor);
+
+        console.log(`Window position: (${windowPosition.x}, ${windowPosition.y})`);
+        console.log(`Scale factor: ${scaleFactor}`);
+        console.log(`Selection (logical): (${selection.x}, ${selection.y}) ${selection.width}×${selection.height}`);
+        console.log(`Capture (physical): (${physicalX}, ${physicalY}) ${physicalWidth}×${physicalHeight}`);
+
+        await invoke('capture_and_copy_to_clipboard', {
+            x: physicalX,
+            y: physicalY,
+            width: physicalWidth,
+            height: physicalHeight,
+        });
+
+        setIsCapturing(false);
+        setIsFlashing(true);
+        setTimeout(() => setIsFlashing(false), 200);
+        
+        setSnackbar({ open: true, message: '截图已复制到剪贴板' });
+        setIsScreenshotMode(false);
+
+    } catch (error) {
+        setIsCapturing(false);
+        console.error('Capture failed:', error);
+        const errorMsg = error instanceof Error ? error.message : String(error);
+        console.log('Full error:', error);
+        setSnackbar({ open: true, message: `截图失败: ${errorMsg}` });
+        setIsScreenshotMode(false);
+    }
+  }, [selection]);
+
   return (
     <>
       <Snackbar
@@ -410,6 +687,8 @@ function App() {
           {snackbar.message}
         </Alert>
       </Snackbar>
+
+      
 
       <div
         style={{
@@ -507,6 +786,93 @@ function App() {
           }}
         />}
       </main>
+
+      {isScreenshotMode && screenInfo && (
+        <div
+          ref={containerRef}
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100vw',
+            height: '100vh',
+            zIndex: 999999,
+            cursor: isDragging ? 'crosshair' : 'default',
+            pointerEvents: isCapturing ? 'none' : 'auto',
+          }}
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
+          onMouseLeave={handleMouseUp}
+        >
+          {!isCapturing && (
+            <>
+              <canvas
+                ref={canvasRef}
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  height: '100%',
+                }}
+              />
+
+              <div
+                style={{
+                  position: 'absolute',
+                  bottom: 32,
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  padding: '12px 24px',
+                  backgroundColor: 'rgba(0, 0, 0, 0.6)',
+                  color: '#ffffff',
+                  borderRadius: '8px',
+                  fontSize: '14px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '16px',
+                }}
+              >
+                <span>拖动选择区域</span>
+                <span style={{ opacity: 0.5 }}>·</span>
+                <span>Enter 确认</span>
+                <span style={{ opacity: 0.5 }}>·</span>
+                <span>Esc 退出</span>
+              </div>
+
+              <button
+                onClick={() => setIsScreenshotMode(false)}
+                style={{
+                  position: 'absolute',
+                  top: 24,
+                  right: 24,
+                  width: '40px',
+                  height: '40px',
+                  borderRadius: '50%',
+                  backgroundColor: 'rgba(0, 0, 0, 0.6)',
+                  border: 'none',
+                  color: '#ffffff',
+                  fontSize: '20px',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  transition: 'background-color 0.2s',
+                }}
+                onMouseEnter={(e) => {
+                  (e.target as HTMLElement).style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+                }}
+                onMouseLeave={(e) => {
+                  (e.target as HTMLElement).style.backgroundColor = 'rgba(0, 0, 0, 0.6)';
+                }}
+              >
+                ✕
+              </button>
+            </>
+          )}
+        </div>
+      )}
     </>
   );
 }

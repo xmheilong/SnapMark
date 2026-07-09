@@ -3,6 +3,7 @@
     "mouse": "Ratón",
     "keyboard": "Teclado",
     "drawing": "Dibujo",
+    "screenshot": "Captura",
     "activation": "Activación",
     "general": "General",
     "about": "Acerca de"
@@ -90,6 +91,7 @@
     "clearAnnotation": "Borrar anotaciones",
     "shortcutHelp": "Ayuda de atajos",
     "toolbarShortcut": "Atajo de barra de herramientas",
+    "screenshot": "Captura de pantalla",
     "messages": {
       "shortcutUpdated": "Atajo establecido en {{shortcut}}",
       "saveFailed": "Error al guardar: {{error}}",
@@ -97,7 +99,8 @@
       "enterDrawMode": "Modo de dibujo activado",
       "exitDrawMode": "Modo de dibujo desactivado",
       "toolbarShown": "Barra de herramientas mostrada ({{shortcut}} alternar)",
-      "toolbarHidden": "Barra de herramientas oculta ({{shortcut}} restaurar)"
+      "toolbarHidden": "Barra de herramientas oculta ({{shortcut}} restaurar)",
+      "screenshotStarted": "Iniciando captura..."
     }
   },
   "general": {
@@ -182,5 +185,22 @@
     "leftClick": "LClick",
     "middleClick": "MClick",
     "rightClick": "RClick"
+  },
+  "screenshot": {
+    "title": "Configuración de captura",
+    "enable": "Activar captura de pantalla",
+    "loading": "Cargando...",
+    "description": "Una vez activado, puede usar atajos para iniciar la captura de pantalla, seleccionar área y copiar automáticamente al portapapeles.",
+    "hint": {
+      "drag": "Arrastra para seleccionar área",
+      "enter": "Enter para confirmar",
+      "escape": "Esc para salir"
+    },
+    "messages": {
+      "enabled": "Captura de pantalla activada",
+      "disabled": "Captura de pantalla desactivada",
+      "saveFailed": "Error al guardar la configuración",
+      "captureFailed": "Captura fallida: {{error}}"
+    }
   }
 }

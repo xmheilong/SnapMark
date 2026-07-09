@@ -3,6 +3,7 @@
     "mouse": "Maus",
     "keyboard": "Tastatur",
     "drawing": "Zeichnen",
+    "screenshot": "Screenshot",
     "activation": "Aktivierung",
     "general": "Allgemein",
     "about": "Über"
@@ -90,6 +91,7 @@
     "clearAnnotation": "Anmerkungen löschen",
     "shortcutHelp": "Tastenkürzel-Hilfe",
     "toolbarShortcut": "Symbolleisten-Tastenkürzel",
+    "screenshot": "Screenshot",
     "messages": {
       "shortcutUpdated": "Tastenkürzel auf {{shortcut}} gesetzt",
       "saveFailed": "Speichern fehlgeschlagen: {{error}}",
@@ -97,7 +99,8 @@
       "enterDrawMode": "Zeichenmodus aktiviert",
       "exitDrawMode": "Zeichenmodus deaktiviert",
       "toolbarShown": "Symbolleiste angezeigt ({{shortcut}} umschalten)",
-      "toolbarHidden": "Symbolleiste ausgeblendet ({{shortcut}} wiederherstellen)"
+      "toolbarHidden": "Symbolleiste ausgeblendet ({{shortcut}} wiederherstellen)",
+      "screenshotStarted": "Screenshot wird gestartet..."
     }
   },
   "general": {
@@ -182,5 +185,22 @@
     "leftClick": "LClick",
     "middleClick": "MClick",
     "rightClick": "RClick"
+  },
+  "screenshot": {
+    "title": "Screenshot-Einstellungen",
+    "enable": "Screenshot aktivieren",
+    "loading": "Laden...",
+    "description": "Nach der Aktivierung können Sie Tastenkürzel verwenden, um Screenshots aufzunehmen, einen Bereich auszuwählen und automatisch in die Zwischenablage zu kopieren.",
+    "hint": {
+      "drag": "Ziehen Sie, um einen Bereich auszuwählen",
+      "enter": "Enter zum Bestätigen",
+      "escape": "Esc zum Beenden"
+    },
+    "messages": {
+      "enabled": "Screenshot aktiviert",
+      "disabled": "Screenshot deaktiviert",
+      "saveFailed": "Einstellungen konnten nicht gespeichert werden",
+      "captureFailed": "Aufnahme fehlgeschlagen: {{error}}"
+    }
   }
 }

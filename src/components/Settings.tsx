@@ -51,6 +51,7 @@ import { useSnackbar } from "../contexts/SnackbarContext.js";
 import { LanguageSetting } from "./LanguageSetting";
 import * as macosPermissions from "tauri-plugin-macos-permissions-api";
 import 关于页面 from "./AboutPage";
+import { ScreenshotToggle } from "./ScreenshotToggle";
 
 function 键盘设置页面() {
     const { t } = useTranslation();
@@ -1457,4 +1458,29 @@ function 通用设置页面() {
 
 
 
-export { 键盘设置页面, 鼠标设置页面, 绘图设置页面, 通用设置页面, 关于页面 };
+function 截图设置页面() {
+    const { t } = useTranslation();
+
+    return (
+        <Box>
+            <Typography variant="h5" sx={{ m: 1, mb: 3, display: "block" }}>{t('screenshot.title')}</Typography>
+
+            <Box sx={{ p: 2, backgroundColor: '#ffffff', borderRadius: 2 }}>
+                <Stack direction="column" spacing={3} sx={{ p: 2 }}>
+                    <ScreenshotToggle />
+                    
+                    <SettingField
+                        label={t('screenshot.description')}
+                        value={
+                            <Typography variant="body2" color="text.secondary">
+                                {t('screenshot.description')}
+                            </Typography>
+                        }
+                    />
+                </Stack>
+            </Box>
+        </Box>
+    );
+}
+
+export { 键盘设置页面, 鼠标设置页面, 绘图设置页面, 截图设置页面, 通用设置页面, 关于页面 };

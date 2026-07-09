@@ -291,6 +291,34 @@ const LayerUI = ({
                           />
                           {heading}
                           <Stack.Row gap={1}>
+                            <button
+                              className="ToolIcon ToolIcon--tool"
+                              title={t("toolBar.screenshot")}
+                              onClick={() => {
+                                window.dispatchEvent(new CustomEvent("screenshot-trigger"));
+                              }}
+                              style={{
+                                background: "none",
+                                border: "none",
+                                cursor: "pointer",
+                                padding: "4px",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                borderRadius: "6px",
+                              }}
+                              onMouseEnter={(e) => {
+                                (e.currentTarget as HTMLElement).style.background = "rgba(0,0,0,0.08)";
+                              }}
+                              onMouseLeave={(e) => {
+                                (e.currentTarget as HTMLElement).style.background = "none";
+                              }}
+                            >
+                              <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                                <path d="M12 15.2a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4z"/>
+                                <path d="M9 2L7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2h-3.17L15 2H9zm3 15c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z"/>
+                              </svg>
+                            </button>
                             <PenModeButton
                               zenModeEnabled={appState.zenModeEnabled}
                               checked={appState.penMode}

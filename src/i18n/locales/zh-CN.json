@@ -3,6 +3,7 @@
     "mouse": "鼠标",
     "keyboard": "键盘",
     "drawing": "绘图",
+    "screenshot": "截图",
     "activation": "激活",
     "general": "通用",
     "about": "关于"
@@ -92,6 +93,7 @@
     "clearAnnotation": "清空标注",
     "shortcutHelp": "快捷键帮助",
     "toolbarShortcut": "工具栏快捷键",
+    "screenshot": "截图",
     "messages": {
       "shortcutUpdated": "快捷键已设置为 {{shortcut}}",
       "saveFailed": "保存设置失败: {{error}}",
@@ -99,7 +101,8 @@
       "enterDrawMode": "进入绘制模式",
       "exitDrawMode": "退出绘制模式",
       "toolbarShown": "工具栏已显示 ({{shortcut}} 切换)",
-      "toolbarHidden": "工具栏已隐藏 ({{shortcut}} 恢复)"
+      "toolbarHidden": "工具栏已隐藏 ({{shortcut}} 恢复)",
+      "screenshotStarted": "开始截图..."
     }
   },
   "general": {
@@ -186,5 +189,22 @@
     "leftClick": "鼠标左键",
     "middleClick": "鼠标中键",
     "rightClick": "鼠标右键"
+  },
+  "screenshot": {
+    "title": "截图设置",
+    "enable": "启用截图功能",
+    "loading": "加载中...",
+    "description": "启用后，您可以使用快捷键启动截图功能，框选区域后自动复制到剪贴板。",
+    "hint": {
+      "drag": "拖动鼠标框选区域",
+      "enter": "Enter 确认",
+      "escape": "Esc 退出"
+    },
+    "messages": {
+      "enabled": "已启用截图功能",
+      "disabled": "已关闭截图功能",
+      "saveFailed": "保存设置失败",
+      "captureFailed": "截图失败: {{error}}"
+    }
   }
 }

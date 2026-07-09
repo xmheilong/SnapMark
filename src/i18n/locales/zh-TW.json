@@ -3,6 +3,7 @@
     "mouse": "滑鼠",
     "keyboard": "鍵盤",
     "drawing": "繪圖",
+    "screenshot": "截圖",
     "activation": "啟用",
     "general": "通用",
     "about": "關於"
@@ -90,6 +91,7 @@
     "clearAnnotation": "清空標註",
     "shortcutHelp": "快速鍵說明",
     "toolbarShortcut": "工具列快速鍵",
+    "screenshot": "截圖",
     "messages": {
       "shortcutUpdated": "快速鍵已設定為 {{shortcut}}",
       "saveFailed": "儲存設定失敗: {{error}}",
@@ -97,7 +99,8 @@
       "enterDrawMode": "進入繪製模式",
       "exitDrawMode": "退出繪製模式",
       "toolbarShown": "工具列已顯示 ({{shortcut}} 切換)",
-      "toolbarHidden": "工具列已隱藏 ({{shortcut}} 恢復)"
+      "toolbarHidden": "工具列已隱藏 ({{shortcut}} 恢復)",
+      "screenshotStarted": "開始截圖..."
     }
   },
   "general": {
@@ -180,5 +183,23 @@
     "kpPlus": "小鍵盤+",
     "leftClick": "鼠標左鍵",
     "middleClick": "鼠標中鍵",
-    "rightClick": "鼠標右鍵"  }
+    "rightClick": "鼠標右鍵"
+  },
+  "screenshot": {
+    "title": "截圖設定",
+    "enable": "啟用截圖功能",
+    "loading": "載入中...",
+    "description": "啟用後，您可以使用快捷鍵啟動截圖功能，框選區域後自動複製到剪貼簿。",
+    "hint": {
+      "drag": "拖動滑鼠框選區域",
+      "enter": "Enter 確認",
+      "escape": "Esc 退出"
+    },
+    "messages": {
+      "enabled": "已啟用截圖功能",
+      "disabled": "已關閉截圖功能",
+      "saveFailed": "儲存設定失敗",
+      "captureFailed": "截圖失敗: {{error}}"
+    }
+  }
 }

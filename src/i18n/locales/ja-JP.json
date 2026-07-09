@@ -3,6 +3,7 @@
     "mouse": "マウス",
     "keyboard": "キーボード",
     "drawing": "描画",
+    "screenshot": "スクリーンショット",
     "activation": "アクティベーション",
     "general": "一般",
     "about": "情報"
@@ -90,6 +91,7 @@
     "clearAnnotation": "注釈をクリア",
     "shortcutHelp": "ショートカットヘルプ",
     "toolbarShortcut": "ツールバーショートカット",
+    "screenshot": "スクリーンショット",
     "messages": {
       "shortcutUpdated": "ショートカットが {{shortcut}} に設定されました",
       "saveFailed": "設定の保存に失敗しました: {{error}}",
@@ -97,7 +99,8 @@
       "enterDrawMode": "描画モードに入りました",
       "exitDrawMode": "描画モードを終了しました",
       "toolbarShown": "ツールバーを表示しました ({{shortcut}} 切替)",
-      "toolbarHidden": "ツールバーを非表示にしました ({{shortcut}} 復元)"
+      "toolbarHidden": "ツールバーを非表示にしました ({{shortcut}} 復元)",
+      "screenshotStarted": "スクリーンショットを開始..."
     }
   },
   "general": {
@@ -184,5 +187,22 @@
     "leftClick": "LClick",
     "middleClick": "MClick",
     "rightClick": "RClick"
+  },
+  "screenshot": {
+    "title": "スクリーンショット設定",
+    "enable": "スクリーンショットを有効にする",
+    "loading": "読み込み中...",
+    "description": "有効にすると、ショートカットキーでスクリーンショットを起動し、領域を選択して自動的にクリップボードにコピーできます。",
+    "hint": {
+      "drag": "領域を選択するためにドラッグ",
+      "enter": "Enter で確認",
+      "escape": "Esc で終了"
+    },
+    "messages": {
+      "enabled": "スクリーンショットが有効になりました",
+      "disabled": "スクリーンショットが無効になりました",
+      "saveFailed": "設定の保存に失敗しました",
+      "captureFailed": "キャプチャに失敗しました: {{error}}"
+    }
   }
 }

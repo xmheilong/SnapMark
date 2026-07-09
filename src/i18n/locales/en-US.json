@@ -3,6 +3,7 @@
     "mouse": "Mouse",
     "keyboard": "Keyboard",
     "drawing": "Drawing",
+    "screenshot": "Screenshot",
     "activation": "Activation",
     "general": "General",
     "about": "About"
@@ -92,6 +93,7 @@
     "clearAnnotation": "Clear Annotation",
     "shortcutHelp": "Shortcut Help",
     "toolbarShortcut": "Toolbar Shortcut",
+    "screenshot": "Screenshot",
     "messages": {
       "shortcutUpdated": "Shortcut set to {{shortcut}}",
       "saveFailed": "Failed to save settings: {{error}}",
@@ -99,7 +101,8 @@
       "enterDrawMode": "Enter drawing mode",
       "exitDrawMode": "Exit drawing mode",
       "toolbarShown": "Toolbar shown ({{shortcut}} toggle)",
-      "toolbarHidden": "Toolbar hidden ({{shortcut}} restore)"
+      "toolbarHidden": "Toolbar hidden ({{shortcut}} restore)",
+      "screenshotStarted": "Starting screenshot..."
     }
   },
   "general": {
@@ -186,5 +189,22 @@
     "leftClick": "LClick",
     "middleClick": "MClick",
     "rightClick": "RClick"
+  },
+  "screenshot": {
+    "title": "Screenshot Settings",
+    "enable": "Enable Screenshot",
+    "loading": "Loading...",
+    "description": "Once enabled, you can use shortcuts to launch screenshot, select area and auto copy to clipboard.",
+    "hint": {
+      "drag": "Drag to select area",
+      "enter": "Enter to confirm",
+      "escape": "Esc to exit"
+    },
+    "messages": {
+      "enabled": "Screenshot enabled",
+      "disabled": "Screenshot disabled",
+      "saveFailed": "Failed to save settings",
+      "captureFailed": "Capture failed: {{error}}"
+    }
   }
 }

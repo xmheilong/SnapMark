@@ -3,6 +3,7 @@
     "mouse": "Souris",
     "keyboard": "Clavier",
     "drawing": "Dessin",
+    "screenshot": "Capture",
     "activation": "Activation",
     "general": "Général",
     "about": "À propos"
@@ -90,6 +91,7 @@
     "clearAnnotation": "Effacer les annotations",
     "shortcutHelp": "Aide des raccourcis",
     "toolbarShortcut": "Raccourci de la barre d'outils",
+    "screenshot": "Capture d'écran",
     "messages": {
       "shortcutUpdated": "Raccourci défini sur {{shortcut}}",
       "saveFailed": "Échec de la sauvegarde: {{error}}",
@@ -97,7 +99,8 @@
       "enterDrawMode": "Mode dessin activé",
       "exitDrawMode": "Mode dessin désactivé",
       "toolbarShown": "Barre d'outils affichée ({{shortcut}} bascule)",
-      "toolbarHidden": "Barre d'outils masquée ({{shortcut}} restaurer)"
+      "toolbarHidden": "Barre d'outils masquée ({{shortcut}} restaurer)",
+      "screenshotStarted": "Démarrage de la capture..."
     }
   },
   "general": {
@@ -184,5 +187,22 @@
     "leftClick": "LClick",
     "middleClick": "MClick",
     "rightClick": "RClick"
+  },
+  "screenshot": {
+    "title": "Paramètres de capture",
+    "enable": "Activer la capture d'écran",
+    "loading": "Chargement...",
+    "description": "Une fois activé, vous pouvez utiliser des raccourcis pour lancer la capture d'écran, sélectionner une zone et copier automatiquement dans le presse-papiers.",
+    "hint": {
+      "drag": "Faites glisser pour sélectionner une zone",
+      "enter": "Enter pour confirmer",
+      "escape": "Esc pour quitter"
+    },
+    "messages": {
+      "enabled": "Capture d'écran activée",
+      "disabled": "Capture d'écran désactivée",
+      "saveFailed": "Échec de la sauvegarde des paramètres",
+      "captureFailed": "Capture échouée: {{error}}"
+    }
   }
 }

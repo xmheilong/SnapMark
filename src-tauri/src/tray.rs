@@ -36,7 +36,7 @@ pub fn create_tray(app: &App) -> tauri::Result<()> {
     // 构建托盘图标
     let _tray = TrayIconBuilder::new()
         .icon(app.default_window_icon().unwrap().clone())
-        .tooltip("Penio")
+        .tooltip("SnapMark")
         .menu(&menu)
         .show_menu_on_left_click(true) // 禁止左键显示菜单
         .icon_as_template(true)

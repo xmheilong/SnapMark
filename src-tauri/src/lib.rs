@@ -27,6 +27,7 @@ use tauri::{AppHandle, Emitter, Manager, WindowEvent};
 use tokio::time::{interval, Duration};
 
 mod aperture;
+mod screenshot;
 mod tray;
 
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
@@ -518,7 +519,10 @@ pub fn run() -> Result<(), Box<dyn std::error::Error>> {
             trigger_drawing_mode,
             refresh_monitors,
             switch_aperture_style,
-            set_aperture_enabled
+            set_aperture_enabled,
+            screenshot::capture_region,
+            screenshot::capture_and_copy_to_clipboard,
+            screenshot::get_screen_info,
         ])
         .device_event_filter(tauri::DeviceEventFilter::Always)
         .setup(|app| {
@@ -593,6 +597,7 @@ pub fn run() -> Result<(), Box<dyn std::error::Error>> {
         .plugin(tauri_plugin_store::Builder::new().build())
         .plugin(tauri_plugin_http::init())
         .plugin(tauri_plugin_process::init())
+        .plugin(tauri_plugin_clipboard::init())
         .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
             let _ = app
                 .get_webview_window("console")
