@@ -1,7 +1,7 @@
 /**
  * MIT License
  * 
- * Copyright (c) 2026 game1024
+ * Copyright (c) 2026 xmheilong
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,7 +30,7 @@ import Box from "@mui/material/Box";
 import { useTranslation } from 'react-i18next';
 import i18n from './i18n';
 import { initLocale } from './i18n';
-import { getCurrentWindow, type CloseRequestedEvent } from "@tauri-apps/api/window";
+import { getCurrentWindow } from "@tauri-apps/api/window";
 
 import MouseIcon from '@mui/icons-material/Mouse';
 import KeyboardIcon from '@mui/icons-material/Keyboard';
@@ -142,13 +142,6 @@ function App() {
 
       document.addEventListener('contextmenu', disableContextMenu, false);
       document.addEventListener('keydown', disableRefresh, false);
-
-      const closeWindow = (e: CloseRequestedEvent) => {
-        e.preventDefault();
-        getCurrentWindow().hide();
-      };
-
-      getCurrentWindow().onCloseRequested(closeWindow);
 
       return () => {
         document.removeEventListener('contextmenu', disableContextMenu, false);

@@ -293,11 +293,16 @@
     "magicframe": "Wireframe to code",
     "embeddable": "Web Embed",
     "laser": "Laser pointer",
-    "hand": "Hand (panning tool)",
+    "hand": "Pan--H",
     "extraTools": "More tools",
     "mermaidToExcalidraw": "Mermaid to Excalidraw",
     "screenshot": "Screenshot",
-    "autoErase": "Auto erase after 3s"
+    "autoEraseOff": "Erase after 3s",
+    "autoEraseOn": "Erase 3s after exit",
+    "draw": "Draw",
+    "selection": "Select--V or 1",
+    "delete": "Eraser--E or 0",
+    "lock": "Drag after drawing--Q"
   },
   "element": {
     "rectangle": "Rectangle",

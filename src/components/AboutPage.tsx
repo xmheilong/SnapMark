@@ -1,7 +1,7 @@
 /**
  * MIT License
  * 
- * Copyright (c) 2026 game1024
+ * Copyright (c) 2026 xmheilong
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -47,7 +47,7 @@ function 关于页面() {
         platformArch: "...",
         platformVersion: "...",
     });
-    const githubUrl = "https://github.com/game1024/Penio";
+    const githubUrl = "https://github.com/xmheilong/SnapMark";
 
     useEffect(() => {
         getName().then(setAppName);

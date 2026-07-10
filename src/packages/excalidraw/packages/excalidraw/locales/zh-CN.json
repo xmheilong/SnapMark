@@ -252,12 +252,17 @@
     "magicframe": "线框图至代码",
     "embeddable": "嵌入网页",
     "laser": "激光笔",
-    "hand": "抓手（平移工具）",
+    "hand": "抓手--H",
     "extraTools": "更多工具",
     "mermaidToExcalidraw": "Mermaid 至 Excalidraw",
     "magicSettings": "AI 设置",
     "screenshot": "截图",
-    "autoErase": "停留3秒后擦除全屏"
+    "autoEraseOff": "3秒后清屏",
+    "autoEraseOn": "退出3秒后清屏",
+    "draw": "绘图",
+    "selection": "选择--V或1",
+    "delete": "橡皮--E或0",
+    "lock": "绘制后可以拖动--Q"
   },
   "headings": {
     "canvasActions": "画布动作",

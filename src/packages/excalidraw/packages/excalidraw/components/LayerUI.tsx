@@ -145,6 +145,43 @@ const LayerUI = ({
   const [toastMsg, setToastMsg] = React.useState<string | null>(null);
   const toolbarVisible = appState.toolbarVisible;
 
+  // 工具栏模式：draw(绘图) / screenshot(截图)
+  const [toolbarMode, setToolbarMode] = React.useState<'draw' | 'screenshot'>('draw');
+
+  // 监听外部模式更新（Escape / Alt+` 触发时同步 UI）
+  React.useEffect(() => {
+    const handleModeUpdated = (e: Event) => {
+      const detail = (e as CustomEvent).detail;
+      if (detail && detail.mode && detail.mode !== 'idle') {
+        if (detail.mode === 'edit') {
+          setToolbarMode('draw');
+        } else {
+          setToolbarMode(detail.mode);
+        }
+      }
+    };
+    window.addEventListener('mode-updated', handleModeUpdated);
+    return () => window.removeEventListener('mode-updated', handleModeUpdated);
+  }, []);
+
+  /**
+   * 处理工具栏模式切换
+   * @param mode - 目标模式: 'draw' | 'screenshot'
+   */
+  const handleToolbarModeChange = (mode: 'draw' | 'screenshot') => {
+    setToolbarMode(mode);
+    // 通知 App.tsx 更新 appMode 状态
+    window.dispatchEvent(new CustomEvent('mode-change', { detail: { mode } }));
+
+    if (mode === 'draw') {
+      // 绘图模式：激活自由画笔工具
+      app.setActiveTool({ type: 'freedraw', locked: true } as any);
+    } else if (mode === 'screenshot') {
+      // 截图模式：触发截图覆盖层
+      window.dispatchEvent(new CustomEvent('screenshot-trigger'));
+    }
+  };
+
   // show toast when toolbar toggled
   const prevVisibleRef = React.useRef(toolbarVisible);
   React.useEffect(() => {
@@ -291,104 +328,93 @@ const LayerUI = ({
                           />
                           {heading}
                           <Stack.Row gap={1}>
-                            <button
-                              className="ToolIcon ToolIcon--tool"
-                              title={t("toolBar.screenshot")}
-                              onClick={() => {
-                                window.dispatchEvent(new CustomEvent("screenshot-trigger"));
-                              }}
-                              style={{
-                                background: "none",
-                                border: "none",
-                                cursor: "pointer",
-                                padding: "4px",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                borderRadius: "6px",
-                              }}
-                              onMouseEnter={(e) => {
-                                (e.currentTarget as HTMLElement).style.background = "rgba(0,0,0,0.08)";
-                              }}
-                              onMouseLeave={(e) => {
-                                (e.currentTarget as HTMLElement).style.background = "none";
-                              }}
-                            >
-                              <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-                                <path d="M12 15.2a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4z"/>
-                                <path d="M9 2L7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2h-3.17L15 2H9zm3 15c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z"/>
-                              </svg>
-                            </button>
-                            <button
-                              className="ToolIcon ToolIcon--tool"
-                              title={t("toolBar.autoErase")}
-                              onClick={() => {
-                                window.dispatchEvent(new CustomEvent("auto-erase-toggle"));
-                              }}
-                              style={{
-                                background: appState.autoEraseEnabled ? "rgba(0,0,0,0.08)" : "none",
-                                border: "none",
-                                cursor: "pointer",
-                                padding: "4px",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                borderRadius: "6px",
-                              }}
-                              onMouseEnter={(e) => {
-                                if (!appState.autoEraseEnabled) {
-                                  (e.currentTarget as HTMLElement).style.background = "rgba(0,0,0,0.08)";
-                                }
-                              }}
-                              onMouseLeave={(e) => {
-                                if (!appState.autoEraseEnabled) {
-                                  (e.currentTarget as HTMLElement).style.background = "none";
-                                }
-                              }}
-                            >
-                              {appState.autoEraseEnabled ? (
-                                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-                                  <path d="M19 13H5v-2h14v2zm0-6H5V5h14v2zm0 12H5v-2h14v2z"/>
-                                  <path d="M3 3h18v18H3V3zm2 2v14h14V5H5z"/>
+                            {/* 第一层：分段控件（模式切换） */}
+                            <div className="mode-segmented-control">
+                              <button
+                                className={clsx("mode-seg-btn", { active: toolbarMode === 'draw' })}
+                                onClick={() => handleToolbarModeChange('draw')}
+                                title={t("toolBar.draw")}
+                              >
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                                  <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
                                 </svg>
-                              ) : (
-                                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-                                  <path d="M19 13H5v-2h14v2zm0-6H5V5h14v2zm0 12H5v-2h14v2z"/>
+                                <span>{t("toolBar.draw")}</span>
+                              </button>
+                              <button
+                                className={clsx("mode-seg-btn", { active: toolbarMode === 'screenshot' })}
+                                onClick={() => handleToolbarModeChange('screenshot')}
+                                title={t("toolBar.screenshot")}
+                              >
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                                  <path d="M12 15.2a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4z"/>
+                                  <path d="M9 2L7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2h-3.17L15 2H9zm3 15c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z"/>
                                 </svg>
-                              )}
-                            </button>
-                            <LockButton
-                              checked={appState.activeTool.locked}
-                              onChange={onLockToggle}
-                              title={t("toolBar.lock")}
-                            />
+                                <span>{t("toolBar.screenshot")}</span>
+                              </button>
+                            </div>
 
                             <div className="App-toolbar__divider" />
 
-                            <HandButton
-                              checked={isHandToolActive(appState)}
-                              onChange={() => onHandToolToggle()}
-                              title={t("toolBar.hand")}
-                              isMobile
-                            />
+                            {/* 第二层：上下文工具栏（根据模式动态切换） */}
+                            <div className="contextual-tools-container">
+                              {/* 绘图模式工具 */}
+                              {toolbarMode === 'draw' && (
+                                <Stack.Row gap={1}>
+                                  <button
+                                    className="ToolIcon ToolIcon--tool"
+                                    title={appState.autoEraseEnabled ? t("toolBar.autoEraseOn") : t("toolBar.autoEraseOff")}
+                                    onClick={() => {
+                                      window.dispatchEvent(new CustomEvent("auto-erase-toggle"));
+                                    }}
+                                    style={{
+                                      background: appState.autoEraseEnabled ? "rgba(0,0,0,0.08)" : "none",
+                                      border: "none",
+                                      cursor: "pointer",
+                                      padding: "4px",
+                                      display: "flex",
+                                      alignItems: "center",
+                                      justifyContent: "center",
+                                      borderRadius: "6px",
+                                    }}
+                                    onMouseEnter={(e) => {
+                                      if (!appState.autoEraseEnabled) {
+                                        (e.currentTarget as HTMLElement).style.background = "rgba(0,0,0,0.08)";
+                                      }
+                                    }}
+                                    onMouseLeave={(e) => {
+                                      if (!appState.autoEraseEnabled) {
+                                        (e.currentTarget as HTMLElement).style.background = "none";
+                                      }
+                                    }}
+                                  >
+                                    {appState.autoEraseEnabled ? (
+                                      <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                                        <path d="M20 20H4V8h16v12zm-7-12l-3 6h2l2-4h2l-3-2z"/>
+                                        <path d="M6 18h12v2H6z"/>
+                                      </svg>
+                                    ) : (
+                                      <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                                        <path d="M20 20H4V8h16v12zM10 9h2v3h2V9h2v7h-2v-3h-2v3H8V9h2z"/>
+                                      </svg>
+                                    )}
+                                  </button>
+                                  <LockButton
+                                    checked={appState.activeTool.locked}
+                                    onChange={onLockToggle}
+                                    title={t("toolBar.lock")}
+                                  />
+                                  <ShapesSwitcher
+                                    appState={appState}
+                                    activeTool={appState.activeTool}
+                                    UIOptions={UIOptions}
+                                    app={app}
+                                  />
+                                </Stack.Row>
+                              )}
 
-                            <LaserPointerButton
-                              title={t("toolBar.laser")}
-                              checked={
-                                appState.activeTool.type === TOOL_TYPE.laser
-                              }
-                              onChange={() =>
-                                app.setActiveTool({ type: TOOL_TYPE.laser })
-                              }
-                              isMobile
-                            />
-
-                            <ShapesSwitcher
-                              appState={appState}
-                              activeTool={appState.activeTool}
-                              UIOptions={UIOptions}
-                              app={app}
-                            />
+                              {/* 截图模式由独立覆盖层处理，这里不显示工具 */}
+                              {toolbarMode === 'screenshot' && null}
+                            </div>
                           </Stack.Row>
                         </Island>
                       </Stack.Row>

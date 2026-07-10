@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright (c) 2026 game1024
+// Copyright (c) 2026 xmheilong
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -28,17 +28,25 @@ use tauri::{
 use tauri_plugin_shell::ShellExt;
 
 /// 创建系统托盘图标
-#[allow(dead_code)]
 pub fn create_tray(app: &App) -> tauri::Result<()> {
     // 创建托盘菜单
     let menu = create_tray_menu(app)?;
 
-    // 构建托盘图标
-    let _tray = TrayIconBuilder::new()
-        .icon(app.default_window_icon().unwrap().clone())
+    // 获取默认窗口图标，避免 panic
+    let icon = match app.default_window_icon() {
+        Some(icon) => icon.clone(),
+        None => {
+            eprintln!("警告: 无法获取默认窗口图标，托盘将不显示图标");
+            return Ok(());
+        }
+    };
+
+    // 构建托盘图标，使用与前端相同的ID，避免重复创建
+    let _tray = TrayIconBuilder::with_id("PENIO_TRAY")
+        .icon(icon)
         .tooltip("SnapMark")
         .menu(&menu)
-        .show_menu_on_left_click(true) // 禁止左键显示菜单
+        .show_menu_on_left_click(true)
         .icon_as_template(true)
         .on_menu_event(|app, event| handle_menu_event(app, event))
         .build(app)?;

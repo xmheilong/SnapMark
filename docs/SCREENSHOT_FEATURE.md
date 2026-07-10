@@ -12,7 +12,7 @@
 | 项 | 值 |
 |----|----|
 | 项目名 | **SnapMark** |
-| 上游 | [game1024/Penio](https://github.com/game1024/Penio) (MIT License) |
+| 上游 | [xmheilong/SnapMark](https://github.com/xmheilong/SnapMark) (MIT License) |
 | 仓库 | `github.com/xmheilong/Penio`（GitHub 仓库名沿用 Penio 是正常的，仓库名 ≠ 产品名） |
 | 应用 identifier | `io.github.xmheilong.snapmark` |
 | 协议 | MIT（保留上游）+ NOTICE 归属声明 |

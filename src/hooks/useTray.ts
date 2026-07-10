@@ -25,19 +25,10 @@ export interface TrayMenuItem {
 export type TrayMenuHandler = (menuId: string) => void | Promise<void>;
 
 
-const TRAY_ID = "PENIO_TRAY";
-let trayCreated = false;
-
-const isMainWindow = async () => {
-    const window = getCurrentWindow();
-    const label = window.label;
-    return label === 'console';
-};
-
+const TRAY_ID = "PENIO_TRAY"
 /**
  * 托盘 Hook
  * 在 JS 中创建和管理系统托盘
- * 只有主窗口（index.html）才能创建托盘，子窗口（motion-board.html）不会创建
  */
 export function useTray() {
     const { isMac } = useOS();
@@ -71,7 +62,7 @@ export function useTray() {
                 id: 'website',
                 text: t('tray.website'),
                 action: async () => {
-                    await open('https://github.com/game1024/Penio');
+                    await open('https://github.com/xmheilong/SnapMark');
                 }
             },
             PredefinedMenuItem.new({ item: 'Separator' }),
@@ -107,22 +98,9 @@ export function useTray() {
     }
     
     const createTray = async () => {
-        if (!(await isMainWindow())) {
-            return;
-        }
-
-        if (trayCreated) {
-            const existingTray = await getTrayById();
-            if (existingTray) {
-                existingTray.setMenu(await getTrayMenu());
-            }
-            return;
-        }
-
-        const existingTray = await getTrayById();
-        if (existingTray) {
-            existingTray.setMenu(await getTrayMenu());
-            trayCreated = true;
+        const tray = await getTrayById();
+        if (tray) {
+            tray.setMenu(await getTrayMenu());
             return;
         }
 
@@ -140,7 +118,6 @@ export function useTray() {
                 iconAsTemplate: isMac(),
             });
 
-            trayCreated = true;
             console.log('Tray icon created successfully');
         } catch (error) {
             console.error('Failed to create tray icon:', error);

@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright (c) 2026 game1024
+// Copyright (c) 2026 xmheilong
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -545,6 +545,11 @@ pub fn run() -> Result<(), Box<dyn std::error::Error>> {
             }
 
             let app_handle = app.handle().clone();
+
+            // 创建系统托盘（Rust端创建，确保即使前端未启动也有托盘图标和退出菜单）
+            if let Err(e) = tray::create_tray(app) {
+                eprintln!("Failed to create tray: {}", e);
+            }
 
             // 设置 Ctrl+C 信号处理器
             #[cfg(debug_assertions)]

@@ -19,8 +19,7 @@
         "width": 880,
         "height": 720,
         "decorations": true,
-        "shadow": true,
-        "skipTaskbar": true
+        "shadow": true
       }
     ],
     "security": {

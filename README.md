@@ -4,7 +4,7 @@
   </a>
 </p>
 
-> **Forked from [game1024/Penio](https://github.com/game1024/Penio) (MIT License)** — renamed to **SnapMark**, adding rectangle screen capture (copied to clipboard).
+> **Forked from [xmheilong/SnapMark](https://github.com/xmheilong/SnapMark) (MIT License)** — renamed to **SnapMark**, adding rectangle screen capture (copied to clipboard).
 
 <p align="center">
   <a href="README.md">简体中文</a> | <a href="README_EN.md">English</a> | <a href="README_JA.md">日本語</a> | <a href="README_KO.md">한국어</a> | <a href="README_FR.md">Français</a> | <a href="README_DE.md">Deutsch</a>
@@ -26,33 +26,33 @@
 
 <p align="center">
 	
-  <img src="https://api.visitorbadge.io/api/visitors?path=game1024.penio&countColor=%234ecdc4">
+  <img src="https://api.visitorbadge.io/api/visitors?path=xmheilong.SnapMark&countColor=%234ecdc4">
   <br/>
     
-  <a href="https://github.com/game1024/Penio/stargazers">
-    <img src="https://img.shields.io/github/stars/game1024/Penio?style=for-the-badge&color=yellow" alt="GitHub Stars">
+  <a href="https://github.com/xmheilong/SnapMark/stargazers">
+    <img src="https://img.shields.io/github/stars/xmheilong/SnapMark?style=for-the-badge&color=yellow" alt="GitHub Stars">
   </a>
 
-  <img src="https://img.shields.io/github/forks/game1024/Penio?style=for-the-badge&color=8a2be2" alt="GitHub Forks">
+  <img src="https://img.shields.io/github/forks/xmheilong/SnapMark?style=for-the-badge&color=8a2be2" alt="GitHub Forks">
 
-  <a href="https://github.com/game1024/Penio/issues">
-    <img src="https://img.shields.io/github/issues-raw/game1024/Penio?style=for-the-badge&label=Issues&color=orange" alt="Github Issues">
+  <a href="https://github.com/xmheilong/SnapMark/issues">
+    <img src="https://img.shields.io/github/issues-raw/xmheilong/SnapMark?style=for-the-badge&label=Issues&color=orange" alt="Github Issues">
   </a>
   <br/>  
   
-  <a href="https://github.com/game1024/Penio/releases">
-    <img src="https://img.shields.io/github/downloads/game1024/Penio/total?style=for-the-badge" alt="Downloads">
+  <a href="https://github.com/xmheilong/SnapMark/releases">
+    <img src="https://img.shields.io/github/downloads/xmheilong/SnapMark/total?style=for-the-badge" alt="Downloads">
   </a>
-  <a href="https://github.com/game1024/Penio/releases">
-    <img src="https://img.shields.io/github/v/release/game1024/Penio?style=for-the-badge&color=brightgreen" alt="Version">
+  <a href="https://github.com/xmheilong/SnapMark/releases">
+    <img src="https://img.shields.io/github/v/release/xmheilong/SnapMark?style=for-the-badge&color=brightgreen" alt="Version">
   </a>
-  <a href="https://github.com/game1024/Penio">
+  <a href="https://github.com/xmheilong/SnapMark">
     <img src="https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-lightblue?style=for-the-badge" alt="Platform">
   </a>
   <br/>
   
-  <a href="https://github.com/game1024/Penio/commits">
-    <img src="https://img.shields.io/github/commit-activity/m/game1024/Penio?style=for-the-badge" alt="提交活跃度">
+  <a href="https://github.com/xmheilong/SnapMark/commits">
+    <img src="https://img.shields.io/github/commit-activity/m/xmheilong/SnapMark?style=for-the-badge" alt="提交活跃度">
   </a>
   <img src="https://img.shields.io/badge/language-TypeScript%20%7C%20Rust-blue?style=for-the-badge">
   <img src="https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge">
@@ -69,7 +69,7 @@
 
 ### 下载安装包
 
-前往 [Releases](https://github.com/game1024/Penio/releases) 页面下载适合你操作系统的安装包：
+前往 [Releases](https://github.com/xmheilong/SnapMark/releases) 页面下载适合你操作系统的安装包：
 
 - **Windows**: 
   
@@ -219,10 +219,10 @@ penio/
 
 ## 📮 联系方式
 
-- **官网**: https://github.com/game1024
-- **BiliBili**: [@game1024](https://space.bilibili.com/426988409)
-- **GitHub Issues**: [报告问题](https://github.com/game1024/Penio/issues)
+- **官网**: https://github.com/xmheilong
+- **BiliBili**: [@xmheilong](https://space.bilibili.com/426988409)
+- **GitHub Issues**: [报告问题](https://github.com/xmheilong/SnapMark/issues)
 
 ---
 
-[![Star History Chart](https://api.star-history.com/svg?repos=game1024/Penio&type=date&legend=top-left)](https://www.star-history.com/#game1024/Penio&type=date&legend=top-left)
+[![Star History Chart](https://api.star-history.com/svg?repos=xmheilong/SnapMark&type=date&legend=top-left)](https://www.star-history.com/#xmheilong/SnapMark&type=date&legend=top-left)

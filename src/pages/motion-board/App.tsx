@@ -1,7 +1,7 @@
 /**
  * MIT License
  * 
- * Copyright (c) 2026 game1024
+ * Copyright (c) 2026 xmheilong
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -59,6 +59,14 @@ interface Selection {
     height: number;
 }
 
+/**
+ * 应用模式枚举
+ * - idle: 鼠标穿透模式（空闲状态，不接收鼠标事件）
+ * - draw: 绘图模式（Excalidraw 接管，可画标注，支持单选多选和删除）
+ * - screenshot: 截图模式（独立选区覆盖层，不加入 Excalidraw 场景）
+ */
+type AppMode = 'idle' | 'draw' | 'screenshot';
+
 function App() {
   // 从 store 加载鼠标设置
   const { mouseSettings, } = useMouseSettings();
@@ -66,8 +74,10 @@ function App() {
   const { keyboardSettings, } = useKeyboardSettings();
   const { drawingSettings, } = useDrawingSettings();
 
-  // 存储鼠标穿透状态
-  const [ignoreCursorEvents, setIgnoreCursorEvents] = useState(true);
+  // 应用模式（idle/draw/screenshot 三态互斥）
+  const [appMode, setAppMode] = useState<AppMode>('idle');
+  // 派生值：鼠标穿透 = idle 模式
+  const ignoreCursorEvents = appMode === 'idle';
 
   // 语言状态
   const [locale, setLocale] = useState<string>(i18n.language || 'zh-CN');
@@ -154,26 +164,25 @@ function App() {
       // 使用 appWindow.listen 只监听发送给当前窗口的事件
       const unlisten = await appWindow.listen('toggle-cursor-events', async (event) => {
         console.log(event)
-        console.log(`[${label}] 收到 toggle-cursor-events 事件, 当前状态: ${ignoreCursorEvents}`);
-        const newState = !ignoreCursorEvents;
+        const currentMode = appModeRef.current;
+        console.log(`[${label}] 收到 toggle-cursor-events 事件, 当前模式: ${currentMode}`);
 
-        setIgnoreCursorEvents(newState);
-        if (newState == false) {
-          setSnackbar({ open: true, message: '进入绘制模式' });
-          setKeyboardPanel(prev => ({ ...prev, modifierKeys: [], keys: [] }));
-          await appWindow.setFocusable(true)
-          await appWindow.setIgnoreCursorEvents(newState);
-          await appWindow.setFocus();
-
-        } else {
-          //setSnackbar({ open: true, message: '退出绘制模式' });
-          // 解决MacOS退出绘制模式，光标样式没有立即恢复的问题
-          // 使窗口无法获得焦点, 退出绘图模式后能立马捕获键盘事件
+        if (currentMode !== 'idle') {
+          // 从任何非 idle 模式切换到 idle
+          setAppMode('idle');
           setKeyboardPanel(prev => ({ ...prev, modifierKeys: [], keys: [] }));
           await appWindow.setFocusable(false);
           await appWindow.hide();
           await appWindow.show();
-          await appWindow.setIgnoreCursorEvents(newState);
+          await appWindow.setIgnoreCursorEvents(true);
+        } else {
+          // 从 idle 切换到绘图模式（默认进入绘图）
+          setAppMode('draw');
+          setSnackbar({ open: true, message: '进入绘制模式' });
+          setKeyboardPanel(prev => ({ ...prev, modifierKeys: [], keys: [] }));
+          await appWindow.setFocusable(true);
+          await appWindow.setIgnoreCursorEvents(false);
+          await appWindow.setFocus();
         }
       });
       return unlisten;
@@ -183,7 +192,7 @@ function App() {
     return () => {
       unlistenPromise.then(unlisten => unlisten());
     };
-  }, [ignoreCursorEvents]);
+  }, [appMode]);
 
   // 监听窗口可见性的变化
   useEffect(() => {
@@ -318,6 +327,18 @@ function App() {
       const unlistenKeyPress = await appWindow.listen<{ key: string }>('key-press', async (event) => {
         console.log(keyboardSettings.enableKeyboardEcho)
         console.log('key-press event received:', event);
+
+        // 在任何非 idle 模式下，Escape 退出到 idle
+        if (event.payload.key === 'Escape' && appModeRef.current !== 'idle') {
+          setAppMode('idle');
+          setKeyboardPanel(prev => ({ ...prev, modifierKeys: [], keys: [] }));
+          await appWindow.setFocusable(false);
+          await appWindow.hide();
+          await appWindow.show();
+          await appWindow.setIgnoreCursorEvents(true);
+          return;
+        }
+
         const isFocused = await appWindow.isFocused();
         if (isFocused) {
           return;
@@ -381,11 +402,12 @@ function App() {
         unlisteners.forEach(unlisten => unlisten());
       });
     };
-  }, [ignoreCursorEvents, mouseSettings, keyboardSettings]);
+  }, [appMode, mouseSettings, keyboardSettings]);
 
   const [snackbar, setSnackbar] = useState<{ open: boolean; message: string }>({ open: false, message: '' });
 
-  const [isScreenshotMode, setIsScreenshotMode] = useState(false);
+  // 派生值：截图模式
+  const isScreenshotMode = appMode === 'screenshot';
   const [screenInfo, setScreenInfo] = useState<ScreenInfo | null>(null);
   const [selection, setSelection] = useState<Selection | null>(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -398,8 +420,8 @@ function App() {
 
   const excalidrawAPIRef = useRef<any>(null);
   const autoEraseTimerRef = useRef<number | null>(null);
-  const ignoreCursorEventsRef = useRef(ignoreCursorEvents);
-  ignoreCursorEventsRef.current = ignoreCursorEvents;
+  const appModeRef = useRef(appMode);
+  appModeRef.current = appMode;
 
   const getDefaultSelection = useCallback((): Selection => {
     if (!screenInfo) {
@@ -459,7 +481,7 @@ function App() {
       e.stopPropagation();
       
       if (e.key === 'Escape') {
-          setIsScreenshotMode(false);
+          setAppMode('idle');
       } else if (e.key === 'Enter') {
           handleCapture();
       }
@@ -473,7 +495,7 @@ function App() {
       } else {
         setSelection(getDefaultSelection());
       }
-      setIsScreenshotMode(true);
+      setAppMode('screenshot');
       setSnackbar({ open: true, message: i18n.t('drawing.messages.screenshotStarted') });
     };
 
@@ -497,19 +519,31 @@ function App() {
       }
     };
 
+    /**
+     * 处理来自 LayerUI 分段控件的模式切换
+     */
+    const handleModeChange = (e: Event) => {
+      const detail = (e as CustomEvent).detail;
+      if (detail && detail.mode) {
+        setAppMode(detail.mode);
+      }
+    };
+
     window.addEventListener('keydown', handleKeyDown, true);
     window.addEventListener('screenshot-trigger', handleScreenshotTrigger);
     window.addEventListener('auto-erase-toggle', handleAutoEraseToggle);
-    
+    window.addEventListener('mode-change', handleModeChange);
+
     return () => {
       window.removeEventListener('keydown', handleKeyDown, true);
       window.removeEventListener('screenshot-trigger', handleScreenshotTrigger);
       window.removeEventListener('auto-erase-toggle', handleAutoEraseToggle);
+      window.removeEventListener('mode-change', handleModeChange);
       if (autoEraseTimerRef.current) {
         clearTimeout(autoEraseTimerRef.current);
       }
     };
-  }, [isScreenshotMode, screenInfo, autoEraseEnabled]);
+  }, [appMode, screenInfo, autoEraseEnabled]);
 
   const handleExcalidrawChange = useCallback(() => {
     if (!autoEraseEnabled) return;
@@ -557,7 +591,12 @@ function App() {
     };
     
     updateWindowSettings();
-  }, [isScreenshotMode, ignoreCursorEvents]);
+
+    // 通知 LayerUI 同步工具栏模式（Escape / Alt+` 触发时）
+    if (appMode !== 'idle') {
+      window.dispatchEvent(new CustomEvent('mode-updated', { detail: { mode: appMode } }));
+    }
+  }, [appMode]);
 
   useEffect(() => {
     if (!isScreenshotMode) return;
@@ -624,7 +663,7 @@ function App() {
     
     ctx.fillStyle = '#ffffff';
     ctx.fillText(sizeText, textX, textY);
-  }, [isScreenshotMode, selection, isFlashing]);
+  }, [appMode, selection, isFlashing]);
 
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
     if (!isScreenshotMode || e.button !== 0) return;
@@ -638,7 +677,7 @@ function App() {
     setIsDragging(true);
     setDragStart({ x, y });
     setSelection({ x, y, width: 0, height: 0 });
-  }, [isScreenshotMode]);
+  }, [appMode]);
 
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     if (!isScreenshotMode || !isDragging || !dragStart) return;
@@ -661,7 +700,7 @@ function App() {
             height,
         });
     }
-  }, [isScreenshotMode, isDragging, dragStart]);
+  }, [appMode, isDragging, dragStart]);
 
   const handleMouseUp = useCallback(() => {
     if (!isScreenshotMode || !isDragging) return;
@@ -672,7 +711,7 @@ function App() {
     if (selection && selection.width >= MIN_SIZE && selection.height >= MIN_SIZE) {
         handleCapture();
     }
-  }, [isScreenshotMode, isDragging, selection]);
+  }, [appMode, isDragging, selection]);
 
   const handleCapture = useCallback(async () => {
     if (!selection) return;
@@ -708,7 +747,7 @@ function App() {
         setTimeout(() => setIsFlashing(false), 200);
         
         setSnackbar({ open: true, message: '截图已复制到剪贴板' });
-        setIsScreenshotMode(false);
+        setAppMode('idle');
 
     } catch (error) {
         setIsCapturing(false);
@@ -716,7 +755,7 @@ function App() {
         const errorMsg = error instanceof Error ? error.message : String(error);
         console.log('Full error:', error);
         setSnackbar({ open: true, message: `截图失败: ${errorMsg}` });
-        setIsScreenshotMode(false);
+        setAppMode('idle');
     }
   }, [selection]);
 
@@ -873,7 +912,7 @@ function App() {
               <div
                 style={{
                   position: 'absolute',
-                  bottom: 32,
+                  top: 24,
                   left: '50%',
                   transform: 'translateX(-50%)',
                   padding: '12px 24px',
@@ -894,7 +933,7 @@ function App() {
               </div>
 
               <button
-                onClick={() => setIsScreenshotMode(false)}
+                onClick={() => setAppMode('idle')}
                 style={{
                   position: 'absolute',
                   top: 24,
