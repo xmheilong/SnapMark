@@ -69,6 +69,31 @@ jobs:
           tagName: v${{ steps.get_version.outputs.version }}
           releaseName: 'SnapMark v${{ steps.get_version.outputs.version }}'
           releaseBody: 'See the assets to download this version and install.'
-          releaseDraft: false          # 改为 false，自动发布正式版
+          releaseDraft: false
           prerelease: false
           args: ${{ matrix.args }}
+
+  # ======================================================
+  # 新增：构建成功后自动同步代码到 Gitee
+  # ======================================================
+  sync-to-gitee:
+    name: Sync to Gitee
+    runs-on: ubuntu-latest
+    needs: [build]        # 等待上面的 build job 完成
+    if: success()         # 只有 build 全部成功才执行
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Push to Gitee
+        env:
+          GITEE_USERNAME: ${{ secrets.GITEE_USERNAME }}
+          GITEE_TOKEN: ${{ secrets.GITEE_TOKEN }}
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          # ↓↓↓ 把下面这行的 "你的Gitee用户名" 替换成你真实的 Gitee 用户名 ↓↓↓
+          git remote add gitee https://${GITEE_USERNAME}:${GITEE_TOKEN}@gitee.com/xmheilong/SnapMark.git
+          git push gitee main --force
