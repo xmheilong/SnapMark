@@ -141,4 +141,17 @@
     min-height: 36px;
     transition: opacity 0.2s ease;
   }
+
+  /* Bilibili 主页按钮 */
+  .bilibili-home-btn {
+    pointer-events: var(--ui-pointerEvents);
+
+    &:hover {
+      background: var(--button-hover-bg, rgba(0, 0, 0, 0.05)) !important;
+    }
+
+    &:active {
+      background: var(--button-active-bg, rgba(0, 0, 0, 0.1)) !important;
+    }
+  }
 }

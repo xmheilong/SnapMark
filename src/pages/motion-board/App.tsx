@@ -30,6 +30,7 @@ import "@excalidraw/excalidraw/fonts/fonts.css";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { getSettings, updateSettings } from "../../store/settings";
 import { invoke } from '@tauri-apps/api/core';
+import { open } from '@tauri-apps/plugin-shell';
 import { clickRippleAnimate, clickFirework, clickSpiral, clickCircleStroke, clickRectStroke } from "./animation/mouse";
 import { type } from '@tauri-apps/plugin-os';
 import { Excalidraw } from "@excalidraw/excalidraw";
@@ -636,16 +637,25 @@ function App() {
       }
     };
 
+    /**
+     * 打开 BiliBili 主页
+     */
+    const handleOpenBilibili = () => {
+      open('https://space.bilibili.com/347358066');
+    };
+
     window.addEventListener('keydown', handleKeyDown, true);
     window.addEventListener('screenshot-trigger', handleScreenshotTrigger);
     window.addEventListener('auto-erase-toggle', handleAutoEraseToggle);
     window.addEventListener('mode-change', handleModeChange);
+    window.addEventListener('open-bilibili', handleOpenBilibili);
 
     return () => {
       window.removeEventListener('keydown', handleKeyDown, true);
       window.removeEventListener('screenshot-trigger', handleScreenshotTrigger);
       window.removeEventListener('auto-erase-toggle', handleAutoEraseToggle);
       window.removeEventListener('mode-change', handleModeChange);
+      window.removeEventListener('open-bilibili', handleOpenBilibili);
       if (autoEraseTimerRef.current) {
         clearTimeout(autoEraseTimerRef.current);
       }

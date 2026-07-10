@@ -328,6 +328,30 @@ const LayerUI = ({
                           />
                           {heading}
                           <Stack.Row gap={1}>
+                            {/* 主页链接 */}
+                            <button
+                              className="bilibili-home-btn"
+                              title="BiliBili 主页"
+                              onClick={() => {
+                                window.dispatchEvent(new CustomEvent('open-bilibili'));
+                              }}
+                              style={{
+                                display: "inline-flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                width: "var(--lg-button-size, 2.25rem)",
+                                height: "var(--lg-button-size, 2.25rem)",
+                                border: "none",
+                                background: "none",
+                                cursor: "pointer",
+                                borderRadius: "var(--border-radius-lg, 8px)",
+                                fontSize: "1.25rem",
+                                lineHeight: 1,
+                              }}
+                            >
+                              🏠
+                            </button>
+
                             {/* 第一层：分段控件（模式切换） */}
                             <div className="mode-segmented-control">
                               <button
