@@ -436,6 +436,8 @@ function App() {
   const autoEraseTimerRef = useRef<number | null>(null);
   const appModeRef = useRef(appMode);
   appModeRef.current = appMode;
+  const isMouseDownRef = useRef(false);
+  const edgeHideTimerRef = useRef<number | null>(null);
 
   const getDefaultSelection = useCallback((): Selection => {
     if (!screenInfo) {
@@ -474,6 +476,97 @@ function App() {
       unlistenPromise.then(unlisten => unlisten());
     };
   }, [drawingSettings.toolbarShortcut]);
+
+  // 鼠标按键状态跟踪（用于边缘检测判断是否处于绘制状态）
+  useEffect(() => {
+    const onMouseDown = () => { isMouseDownRef.current = true; };
+    const onMouseUp = () => { isMouseDownRef.current = false; };
+    window.addEventListener('mousedown', onMouseDown);
+    window.addEventListener('mouseup', onMouseUp);
+    return () => {
+      window.removeEventListener('mousedown', onMouseDown);
+      window.removeEventListener('mouseup', onMouseUp);
+    };
+  }, []);
+
+  /**
+   * 工具栏/侧面板自动隐藏：
+   * - 绘图模式下，鼠标靠近屏幕边缘时自动显示工具栏和侧面板
+   * - 鼠标离开边缘后 2 秒自动隐藏
+   * - 鼠标按键按下时（正在绘制）不触发任何显示
+   */
+  useEffect(() => {
+    if (appMode !== 'draw') return;
+
+    const EDGE_THRESHOLD = 40;
+    const HIDE_DELAY_MS = 2000;
+
+    let nearTop = false;
+    let nearSide = false;
+
+    const clearEdgeHideTimer = () => {
+      if (edgeHideTimerRef.current !== null) {
+        clearTimeout(edgeHideTimerRef.current);
+        edgeHideTimerRef.current = null;
+      }
+    };
+
+    const scheduleHide = () => {
+      clearEdgeHideTimer();
+      edgeHideTimerRef.current = window.setTimeout(() => {
+        const api = excalidrawAPIRef.current;
+        if (api && !isMouseDownRef.current) {
+          api.updateScene({ appState: { toolbarVisible: false, openSidebar: null } });
+        }
+        nearTop = false;
+        nearSide = false;
+        edgeHideTimerRef.current = null;
+      }, HIDE_DELAY_MS);
+    };
+
+    const handleMouseMove = (e: MouseEvent) => {
+      // 鼠标按键按下时（正在绘制），不触发任何显示
+      if (isMouseDownRef.current) return;
+
+      const currentNearTop = e.clientY < EDGE_THRESHOLD;
+      const currentNearSide = e.clientX < EDGE_THRESHOLD || (window.innerWidth - e.clientX) < EDGE_THRESHOLD;
+
+      const api = excalidrawAPIRef.current;
+      if (!api) return;
+
+      // 鼠标靠近顶部边缘 → 显示工具栏
+      if (currentNearTop && !nearTop) {
+        api.updateScene({ appState: { toolbarVisible: true } });
+        nearTop = true;
+      }
+
+      // 鼠标靠近左右边缘 → 显示侧面板
+      if (currentNearSide && !nearSide) {
+        api.updateScene({ appState: { openSidebar: { name: "default", tab: "library" } } });
+        nearSide = true;
+      }
+
+      // 鼠标位于边缘区域 → 清除隐藏定时器
+      if (currentNearTop || currentNearSide) {
+        clearEdgeHideTimer();
+      } else if (!edgeHideTimerRef.current) {
+        // 鼠标离开边缘 → 启动延迟隐藏
+        scheduleHide();
+      }
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      clearEdgeHideTimer();
+      // 离开绘图模式时恢复显示
+      const api = excalidrawAPIRef.current;
+      if (api) {
+        api.updateScene({ appState: { toolbarVisible: true, openSidebar: null } });
+      }
+    };
+  }, [appMode]);
 
   useEffect(() => {
     const loadScreenInfo = async () => {

@@ -16,6 +16,7 @@
         "title": "控制台",
         "url": "/",
         "label": "console",
+        "visible": false,
         "width": 880,
         "height": 720,
         "decorations": true,
