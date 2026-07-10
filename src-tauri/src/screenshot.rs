@@ -20,10 +20,23 @@ pub async fn capture_region(
         return Err("未检测到显示器".to_string());
     }
 
-    let primary_screen = screens.first().ok_or("获取主屏幕失败")?;
+    let target_screen = screens
+        .iter()
+        .find(|screen| {
+            let info = &screen.display_info;
+            x >= info.x
+                && x < info.x + info.width as i32
+                && y >= info.y
+                && y < info.y + info.height as i32
+        })
+        .ok_or("坐标不在任何显示器范围内")?;
 
-    let image = primary_screen
-        .capture_area(x, y, width, height)
+    let info = &target_screen.display_info;
+    let local_x = x - info.x;
+    let local_y = y - info.y;
+
+    let image = target_screen
+        .capture_area(local_x, local_y, width, height)
         .map_err(|e| format!("截图失败: {}", e))?;
 
     let mut png_data = Vec::new();
@@ -82,6 +95,21 @@ pub async fn capture_and_copy_to_clipboard(
     clipboard.write_image_base64(png_base64).map_err(|e| format!("复制到剪贴板失败: {}", e))?;
 
     Ok(())
+}
+
+#[tauri::command]
+pub async fn copy_png_to_clipboard(
+    png_data: Vec<u8>,
+    clipboard: State<'_, tauri_plugin_clipboard::Clipboard>,
+) -> Result<String, String> {
+    if png_data.is_empty() {
+        return Err("PNG 数据为空".to_string());
+    }
+
+    let png_base64 = base64::engine::general_purpose::STANDARD.encode(&png_data);
+    clipboard.write_image_base64(png_base64).map_err(|e| format!("复制到剪贴板失败: {}", e))?;
+
+    Ok("success".to_string())
 }
 
 #[tauri::command]

@@ -328,14 +328,18 @@ function App() {
         console.log(keyboardSettings.enableKeyboardEcho)
         console.log('key-press event received:', event);
 
-        // 在任何非 idle 模式下，Escape 退出到 idle
+        // Escape 键退出当前模式
         if (event.payload.key === 'Escape' && appModeRef.current !== 'idle') {
-          setAppMode('idle');
+          if (appModeRef.current === 'screenshot') {
+            setAppMode('draw');
+          } else {
+            setAppMode('idle');
+            await appWindow.setFocusable(false);
+            await appWindow.hide();
+            await appWindow.show();
+            await appWindow.setIgnoreCursorEvents(true);
+          }
           setKeyboardPanel(prev => ({ ...prev, modifierKeys: [], keys: [] }));
-          await appWindow.setFocusable(false);
-          await appWindow.hide();
-          await appWindow.show();
-          await appWindow.setIgnoreCursorEvents(true);
           return;
         }
 
@@ -418,6 +422,15 @@ function App() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
+  // 截图形状类型
+  type ScreenshotShape = 'rectangle' | 'circle' | 'freehand';
+  const [screenshotShape, setScreenshotShape] = useState<ScreenshotShape>('rectangle');
+  // 圆形选区状态
+  const [circleCenter, setCircleCenter] = useState<{ x: number; y: number } | null>(null);
+  const [circleRadius, setCircleRadius] = useState(0);
+  // 套索选区状态
+  const [freehandPoints, setFreehandPoints] = useState<Array<{ x: number; y: number }>>([]);
+
   const excalidrawAPIRef = useRef<any>(null);
   const autoEraseTimerRef = useRef<number | null>(null);
   const appModeRef = useRef(appMode);
@@ -481,7 +494,7 @@ function App() {
       e.stopPropagation();
       
       if (e.key === 'Escape') {
-          setAppMode('idle');
+          setAppMode('draw');
       } else if (e.key === 'Enter') {
           handleCapture();
       }
@@ -578,7 +591,7 @@ function App() {
             await appWindow.setFocus();
             
             if (api) {
-                api.updateScene({ appState: { toolbarVisible: false } });
+                api.updateScene({ appState: { toolbarVisible: true } });
             }
         } else {
             await appWindow.setFocusable(ignoreCursorEvents === false);
@@ -602,7 +615,7 @@ function App() {
     if (!isScreenshotMode) return;
     
     const canvas = canvasRef.current;
-    if (!canvas || !selection) return;
+    if (!canvas) return;
 
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
@@ -618,8 +631,6 @@ function App() {
     ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
     ctx.fillRect(0, 0, width, height);
 
-    ctx.clearRect(selection.x, selection.y, selection.width, selection.height);
-
     const COLOR = '#4ecdc4';
     const BORDER_WIDTH = 2;
     
@@ -630,40 +641,89 @@ function App() {
         ctx.shadowColor = COLOR;
         ctx.shadowBlur = 20;
     }
-    
-    ctx.strokeRect(
-        selection.x + BORDER_WIDTH / 2,
-        selection.y + BORDER_WIDTH / 2,
-        selection.width - BORDER_WIDTH,
-        selection.height - BORDER_WIDTH
-    );
+
+    if (screenshotShape === 'rectangle' && selection) {
+      ctx.clearRect(selection.x, selection.y, selection.width, selection.height);
+      
+      ctx.strokeRect(
+          selection.x + BORDER_WIDTH / 2,
+          selection.y + BORDER_WIDTH / 2,
+          selection.width - BORDER_WIDTH,
+          selection.height - BORDER_WIDTH
+      );
+      
+      const cornerSize = 12;
+      ctx.fillStyle = COLOR;
+      
+      ctx.fillRect(selection.x - cornerSize / 2, selection.y - cornerSize / 2, cornerSize, cornerSize);
+      ctx.fillRect(selection.x + selection.width - cornerSize / 2, selection.y - cornerSize / 2, cornerSize, cornerSize);
+      ctx.fillRect(selection.x - cornerSize / 2, selection.y + selection.height - cornerSize / 2, cornerSize, cornerSize);
+      ctx.fillRect(selection.x + selection.width - cornerSize / 2, selection.y + selection.height - cornerSize / 2, cornerSize, cornerSize);
+
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+      ctx.font = '14px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'top';
+      
+      const sizeText = `${selection.width} × ${selection.height}`;
+      const textX = selection.x + 8;
+      const textY = selection.y + 8;
+      
+      const metrics = ctx.measureText(sizeText);
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
+      ctx.fillRect(textX - 4, textY - 4, metrics.width + 8, 24);
+      
+      ctx.fillStyle = '#ffffff';
+      ctx.fillText(sizeText, textX, textY);
+    } else if (screenshotShape === 'circle' && circleCenter && circleRadius > 0) {
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(circleCenter.x, circleCenter.y, circleRadius, 0, Math.PI * 2);
+      ctx.clip();
+      ctx.clearRect(0, 0, width, height);
+      ctx.restore();
+      
+      ctx.beginPath();
+      ctx.arc(circleCenter.x, circleCenter.y, circleRadius, 0, Math.PI * 2);
+      ctx.stroke();
+
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+      ctx.font = '14px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'top';
+      
+      const sizeText = `${Math.round(circleRadius * 2)} × ${Math.round(circleRadius * 2)}`;
+      const textX = circleCenter.x - circleRadius + 8;
+      const textY = circleCenter.y - circleRadius + 8;
+      
+      const metrics = ctx.measureText(sizeText);
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
+      ctx.fillRect(textX - 4, textY - 4, metrics.width + 8, 24);
+      
+      ctx.fillStyle = '#ffffff';
+      ctx.fillText(sizeText, textX, textY);
+    } else if (screenshotShape === 'freehand' && freehandPoints.length > 1) {
+      ctx.beginPath();
+      ctx.moveTo(freehandPoints[0].x, freehandPoints[0].y);
+      for (let i = 1; i < freehandPoints.length; i++) {
+        ctx.lineTo(freehandPoints[i].x, freehandPoints[i].y);
+      }
+      ctx.closePath();
+      ctx.clip();
+      ctx.clearRect(0, 0, width, height);
+      ctx.restore();
+      
+      ctx.beginPath();
+      ctx.moveTo(freehandPoints[0].x, freehandPoints[0].y);
+      for (let i = 1; i < freehandPoints.length; i++) {
+        ctx.lineTo(freehandPoints[i].x, freehandPoints[i].y);
+      }
+      ctx.closePath();
+      ctx.stroke();
+    }
     
     ctx.shadowBlur = 0;
-
-    const cornerSize = 12;
-    ctx.fillStyle = COLOR;
-    
-    ctx.fillRect(selection.x - cornerSize / 2, selection.y - cornerSize / 2, cornerSize, cornerSize);
-    ctx.fillRect(selection.x + selection.width - cornerSize / 2, selection.y - cornerSize / 2, cornerSize, cornerSize);
-    ctx.fillRect(selection.x - cornerSize / 2, selection.y + selection.height - cornerSize / 2, cornerSize, cornerSize);
-    ctx.fillRect(selection.x + selection.width - cornerSize / 2, selection.y + selection.height - cornerSize / 2, cornerSize, cornerSize);
-
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
-    ctx.font = '14px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-    ctx.textAlign = 'left';
-    ctx.textBaseline = 'top';
-    
-    const sizeText = `${selection.width} × ${selection.height}`;
-    const textX = selection.x + 8;
-    const textY = selection.y + 8;
-    
-    const metrics = ctx.measureText(sizeText);
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
-    ctx.fillRect(textX - 4, textY - 4, metrics.width + 8, 24);
-    
-    ctx.fillStyle = '#ffffff';
-    ctx.fillText(sizeText, textX, textY);
-  }, [appMode, selection, isFlashing]);
+  }, [appMode, selection, isFlashing, screenshotShape, circleCenter, circleRadius, freehandPoints]);
 
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
     if (!isScreenshotMode || e.button !== 0) return;
@@ -676,8 +736,21 @@ function App() {
 
     setIsDragging(true);
     setDragStart({ x, y });
-    setSelection({ x, y, width: 0, height: 0 });
-  }, [appMode]);
+
+    const api = excalidrawAPIRef.current;
+    if (api) {
+      api.updateScene({ appState: { toolbarVisible: false } });
+    }
+
+    if (screenshotShape === 'rectangle') {
+      setSelection({ x, y, width: 0, height: 0 });
+    } else if (screenshotShape === 'circle') {
+      setCircleCenter({ x, y });
+      setCircleRadius(0);
+    } else if (screenshotShape === 'freehand') {
+      setFreehandPoints([{ x, y }]);
+    }
+  }, [appMode, screenshotShape]);
 
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     if (!isScreenshotMode || !isDragging || !dragStart) return;
@@ -688,19 +761,32 @@ function App() {
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
 
-    const width = Math.abs(x - dragStart.x);
-    const height = Math.abs(y - dragStart.y);
-    const MIN_SIZE = 10;
-    
-    if (width >= MIN_SIZE && height >= MIN_SIZE) {
-        setSelection({
-            x: Math.min(x, dragStart.x),
-            y: Math.min(y, dragStart.y),
-            width,
-            height,
-        });
+    if (screenshotShape === 'rectangle') {
+      const width = Math.abs(x - dragStart.x);
+      const height = Math.abs(y - dragStart.y);
+      const MIN_SIZE = 10;
+      
+      if (width >= MIN_SIZE && height >= MIN_SIZE) {
+          setSelection({
+              x: Math.min(x, dragStart.x),
+              y: Math.min(y, dragStart.y),
+              width,
+              height,
+          });
+      }
+    } else if (screenshotShape === 'circle') {
+      if (circleCenter) {
+        const dx = x - circleCenter.x;
+        const dy = y - circleCenter.y;
+        const radius = Math.sqrt(dx * dx + dy * dy);
+        if (radius >= 10) {
+          setCircleRadius(radius);
+        }
+      }
+    } else if (screenshotShape === 'freehand') {
+      setFreehandPoints(prev => [...prev, { x, y }]);
     }
-  }, [appMode, isDragging, dragStart]);
+  }, [appMode, isDragging, dragStart, screenshotShape, circleCenter]);
 
   const handleMouseUp = useCallback(() => {
     if (!isScreenshotMode || !isDragging) return;
@@ -708,13 +794,47 @@ function App() {
     setDragStart(null);
 
     const MIN_SIZE = 10;
-    if (selection && selection.width >= MIN_SIZE && selection.height >= MIN_SIZE) {
+    if (screenshotShape === 'rectangle' && selection && selection.width >= MIN_SIZE && selection.height >= MIN_SIZE) {
+        handleCapture();
+    } else if (screenshotShape === 'circle' && circleRadius >= MIN_SIZE) {
+        handleCapture();
+    } else if (screenshotShape === 'freehand' && freehandPoints.length > 5) {
         handleCapture();
     }
-  }, [appMode, isDragging, selection]);
+  }, [appMode, isDragging, selection, screenshotShape, circleRadius, freehandPoints]);
+
+  const getBoundingRect = useCallback(() => {
+    if (screenshotShape === 'rectangle' && selection) {
+      return selection;
+    } else if (screenshotShape === 'circle' && circleCenter && circleRadius > 0) {
+      return {
+        x: circleCenter.x - circleRadius,
+        y: circleCenter.y - circleRadius,
+        width: circleRadius * 2,
+        height: circleRadius * 2,
+      };
+    } else if (screenshotShape === 'freehand' && freehandPoints.length > 1) {
+      let minX = Infinity, maxX = -Infinity;
+      let minY = Infinity, maxY = -Infinity;
+      freehandPoints.forEach(point => {
+        minX = Math.min(minX, point.x);
+        maxX = Math.max(maxX, point.x);
+        minY = Math.min(minY, point.y);
+        maxY = Math.max(maxY, point.y);
+      });
+      return {
+        x: minX,
+        y: minY,
+        width: maxX - minX,
+        height: maxY - minY,
+      };
+    }
+    return null;
+  }, [screenshotShape, selection, circleCenter, circleRadius, freehandPoints]);
 
   const handleCapture = useCallback(async () => {
-    if (!selection) return;
+    const boundingRect = getBoundingRect();
+    if (!boundingRect) return;
 
     try {
         setIsCapturing(true);
@@ -725,29 +845,150 @@ function App() {
         const windowPosition = await appWindow.innerPosition();
         const scaleFactor = await appWindow.scaleFactor();
         
-        const physicalX = Math.round(selection.x * scaleFactor + windowPosition.x);
-        const physicalY = Math.round(selection.y * scaleFactor + windowPosition.y);
-        const physicalWidth = Math.round(selection.width * scaleFactor);
-        const physicalHeight = Math.round(selection.height * scaleFactor);
+        const physicalX = Math.round(boundingRect.x * scaleFactor + windowPosition.x);
+        const physicalY = Math.round(boundingRect.y * scaleFactor + windowPosition.y);
+        const physicalWidth = Math.round(boundingRect.width * scaleFactor);
+        const physicalHeight = Math.round(boundingRect.height * scaleFactor);
 
         console.log(`Window position: (${windowPosition.x}, ${windowPosition.y})`);
         console.log(`Scale factor: ${scaleFactor}`);
-        console.log(`Selection (logical): (${selection.x}, ${selection.y}) ${selection.width}×${selection.height}`);
+        console.log(`Selection (logical): (${boundingRect.x}, ${boundingRect.y}) ${boundingRect.width}×${boundingRect.height}`);
         console.log(`Capture (physical): (${physicalX}, ${physicalY}) ${physicalWidth}×${physicalHeight}`);
 
-        await invoke('capture_and_copy_to_clipboard', {
+        const pngData = await invoke<number[]>('capture_region', {
             x: physicalX,
             y: physicalY,
             width: physicalWidth,
             height: physicalHeight,
         });
 
-        setIsCapturing(false);
-        setIsFlashing(true);
-        setTimeout(() => setIsFlashing(false), 200);
-        
-        setSnackbar({ open: true, message: '截图已复制到剪贴板' });
-        setAppMode('idle');
+        if (!pngData || pngData.length === 0) {
+            throw new Error('未能获取截图数据');
+        }
+
+        const uint8Array = new Uint8Array(pngData);
+        const blob = new Blob([uint8Array], { type: 'image/png' });
+
+        if (screenshotShape === 'rectangle') {
+            try {
+                await navigator.clipboard.write([
+                    new ClipboardItem({ 'image/png': blob })
+                ]);
+            } catch {
+                await invoke('capture_and_copy_to_clipboard', {
+                    x: physicalX,
+                    y: physicalY,
+                    width: physicalWidth,
+                    height: physicalHeight,
+                });
+            }
+
+            setIsCapturing(false);
+            setIsFlashing(true);
+            setTimeout(() => setIsFlashing(false), 200);
+            
+            setSnackbar({ open: true, message: '截图已复制到剪贴板' });
+            setAppMode('draw');
+            
+            setTimeout(() => {
+                const api = excalidrawAPIRef.current;
+                if (api) {
+                    api.updateScene({ appState: { toolbarVisible: true } });
+                }
+            }, 100);
+        } else {
+            const url = URL.createObjectURL(blob);
+            
+            const img = new Image();
+            img.onload = async () => {
+                URL.revokeObjectURL(url);
+                
+                const cropCanvas = document.createElement('canvas');
+                cropCanvas.width = boundingRect.width;
+                cropCanvas.height = boundingRect.height;
+                const cropCtx = cropCanvas.getContext('2d');
+                if (!cropCtx) {
+                    throw new Error('无法创建 Canvas 上下文');
+                }
+
+                cropCtx.save();
+
+                if (screenshotShape === 'circle' && circleCenter) {
+                    const centerX = circleRadius;
+                    const centerY = circleRadius;
+                    cropCtx.beginPath();
+                    cropCtx.arc(centerX, centerY, circleRadius, 0, Math.PI * 2);
+                    cropCtx.clip();
+                } else if (screenshotShape === 'freehand' && freehandPoints.length > 1) {
+                    cropCtx.beginPath();
+                    cropCtx.moveTo(freehandPoints[0].x - boundingRect.x, freehandPoints[0].y - boundingRect.y);
+                    for (let i = 1; i < freehandPoints.length; i++) {
+                        cropCtx.lineTo(freehandPoints[i].x - boundingRect.x, freehandPoints[i].y - boundingRect.y);
+                    }
+                    cropCtx.closePath();
+                    cropCtx.clip();
+                }
+
+                cropCtx.drawImage(img, 0, 0, boundingRect.width, boundingRect.height);
+                cropCtx.restore();
+
+                cropCanvas.toBlob(async (cropBlob) => {
+                    if (!cropBlob) {
+                        throw new Error('无法生成裁剪后的图片');
+                    }
+
+                    try {
+                        await navigator.clipboard.write([
+                            new ClipboardItem({ 'image/png': cropBlob })
+                        ]);
+                    } catch {
+                        const arrayBuffer = await cropBlob.arrayBuffer();
+                        const cropUint8Array = new Uint8Array(arrayBuffer);
+                        await invoke<string>('copy_png_to_clipboard', {
+                            pngData: Array.from(cropUint8Array),
+                        });
+                    }
+
+                    setIsCapturing(false);
+                    setIsFlashing(true);
+                    setTimeout(() => setIsFlashing(false), 200);
+                    
+                    setSnackbar({ open: true, message: '截图已复制到剪贴板' });
+                    setAppMode('draw');
+                    
+                    setTimeout(() => {
+                        const api = excalidrawAPIRef.current;
+                        if (api) {
+                            api.updateScene({ appState: { toolbarVisible: true } });
+                        }
+                    }, 100);
+                }, 'image/png');
+            };
+            img.onerror = () => {
+                URL.revokeObjectURL(url);
+                invoke('capture_and_copy_to_clipboard', {
+                    x: physicalX,
+                    y: physicalY,
+                    width: physicalWidth,
+                    height: physicalHeight,
+                }).then(() => {
+                    setIsCapturing(false);
+                    setIsFlashing(true);
+                    setTimeout(() => setIsFlashing(false), 200);
+                    
+                    setSnackbar({ open: true, message: '截图已复制到剪贴板' });
+                    setAppMode('draw');
+                    
+                    setTimeout(() => {
+                        const api = excalidrawAPIRef.current;
+                        if (api) {
+                            api.updateScene({ appState: { toolbarVisible: true } });
+                        }
+                    }, 100);
+                });
+            };
+            img.src = url;
+        }
 
     } catch (error) {
         setIsCapturing(false);
@@ -755,9 +996,9 @@ function App() {
         const errorMsg = error instanceof Error ? error.message : String(error);
         console.log('Full error:', error);
         setSnackbar({ open: true, message: `截图失败: ${errorMsg}` });
-        setAppMode('idle');
+        setAppMode('draw');
     }
-  }, [selection]);
+  }, [getBoundingRect, screenshotShape, circleCenter, circleRadius, freehandPoints]);
 
   return (
     <>
@@ -835,7 +1076,7 @@ function App() {
           width: '100%',
           height: '100%',
           pointerEvents: ignoreCursorEvents ? 'auto' : 'none',
-          zIndex: 999999,
+          zIndex: 10,
         }} />
 
         {<Excalidraw
@@ -887,7 +1128,7 @@ function App() {
             left: 0,
             width: '100vw',
             height: '100vh',
-            zIndex: 999999,
+            zIndex: 1000,
             cursor: isDragging ? 'crosshair' : 'default',
             pointerEvents: isCapturing ? 'none' : 'auto',
           }}
@@ -915,25 +1156,106 @@ function App() {
                   top: 24,
                   left: '50%',
                   transform: 'translateX(-50%)',
-                  padding: '12px 24px',
+                  padding: '8px',
                   backgroundColor: 'rgba(0, 0, 0, 0.6)',
-                  color: '#ffffff',
                   borderRadius: '8px',
-                  fontSize: '14px',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '16px',
+                  gap: '4px',
                 }}
               >
-                <span>拖动选择区域</span>
+                <button
+                  onClick={() => {
+                    setScreenshotShape('rectangle');
+                    setSelection(null);
+                    setCircleCenter(null);
+                    setCircleRadius(0);
+                    setFreehandPoints([]);
+                  }}
+                  style={{
+                    width: '36px',
+                    height: '36px',
+                    borderRadius: '6px',
+                    backgroundColor: screenshotShape === 'rectangle' ? 'rgba(78, 205, 196, 0.8)' : 'transparent',
+                    border: 'none',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    transition: 'background-color 0.2s',
+                  }}
+                  title="矩形截图"
+                >
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="#ffffff">
+                    <path d="M3 3h18v18H3V3zm2 2v14h14V5H5z"/>
+                  </svg>
+                </button>
+                <button
+                  onClick={() => {
+                    setScreenshotShape('circle');
+                    setSelection(null);
+                    setCircleCenter(null);
+                    setCircleRadius(0);
+                    setFreehandPoints([]);
+                  }}
+                  style={{
+                    width: '36px',
+                    height: '36px',
+                    borderRadius: '6px',
+                    backgroundColor: screenshotShape === 'circle' ? 'rgba(78, 205, 196, 0.8)' : 'transparent',
+                    border: 'none',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    transition: 'background-color 0.2s',
+                  }}
+                  title="圆形截图"
+                >
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="#ffffff">
+                    <circle cx="12" cy="12" r="10"/>
+                  </svg>
+                </button>
+                <button
+                  onClick={() => {
+                    setScreenshotShape('freehand');
+                    setSelection(null);
+                    setCircleCenter(null);
+                    setCircleRadius(0);
+                    setFreehandPoints([]);
+                  }}
+                  style={{
+                    width: '36px',
+                    height: '36px',
+                    borderRadius: '6px',
+                    backgroundColor: screenshotShape === 'freehand' ? 'rgba(78, 205, 196, 0.8)' : 'transparent',
+                    border: 'none',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    transition: 'background-color 0.2s',
+                  }}
+                  title="套索截图"
+                >
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="#ffffff">
+                    <path d="M12 2c-2 0-4 1-5 3L7 7c1-2 3-3 5-3s4 1 5 3l0 0c-1-2-3-3-5-3zm0 18c2 0 4-1 5-3l2 2c-1 2-3 3-5 3s-4-1-5-3l2-2c1 2 3 3 5 3zm-7-8c0-2 1-4 3-5l-2-2c-2 1-3 3-3 5s1 4 3 5l2-2c-2-1-3-3-3-5zm14 0c0-2-1-4-3-5l2-2c2 1 3 3 3 5s-1 4-3 5l-2-2c2-1 3-3 3-5z"/>
+                  </svg>
+                </button>
+                <div style={{ width: '1px', height: '24px', backgroundColor: 'rgba(255,255,255,0.2)' }} />
+                <span style={{ color: '#ffffff', fontSize: '13px' }}>
+                  {screenshotShape === 'rectangle' && '拖动选择区域'}
+                  {screenshotShape === 'circle' && '点击圆心拖动半径'}
+                  {screenshotShape === 'freehand' && '自由绘制选区'}
+                </span>
                 <span style={{ opacity: 0.5 }}>·</span>
-                <span>Enter 确认</span>
+                <span style={{ color: '#ffffff', fontSize: '13px' }}>Enter 确认</span>
                 <span style={{ opacity: 0.5 }}>·</span>
-                <span>Esc 退出</span>
+                <span style={{ color: '#ffffff', fontSize: '13px' }}>Esc 退出</span>
               </div>
 
               <button
-                onClick={() => setAppMode('idle')}
+                onClick={() => setAppMode('draw')}
                 style={{
                   position: 'absolute',
                   top: 24,

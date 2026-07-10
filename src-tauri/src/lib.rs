@@ -522,6 +522,7 @@ pub fn run() -> Result<(), Box<dyn std::error::Error>> {
             set_aperture_enabled,
             screenshot::capture_region,
             screenshot::capture_and_copy_to_clipboard,
+            screenshot::copy_png_to_clipboard,
             screenshot::get_screen_info,
         ])
         .device_event_filter(tauri::DeviceEventFilter::Always)
