@@ -28,6 +28,7 @@ import "@excalidraw/excalidraw/css/app.scss";
 import "@excalidraw/excalidraw/css/styles.scss";
 import "@excalidraw/excalidraw/fonts/fonts.css";
 import { getCurrentWindow } from "@tauri-apps/api/window";
+import { getSettings, updateSettings } from "../../store/settings";
 import { invoke } from '@tauri-apps/api/core';
 import { clickRippleAnimate, clickFirework, clickSpiral, clickCircleStroke, clickRectStroke } from "./animation/mouse";
 import { type } from '@tauri-apps/plugin-os';
@@ -869,6 +870,26 @@ function App() {
     const boundingRect = getBoundingRect();
     if (!boundingRect) return;
 
+    // 保存鼠标光圈设置并关闭，避免光圈被截入截图
+    const settings = await getSettings();
+    const prevApertureEnabled = settings.mouse.enableAperture;
+    if (prevApertureEnabled) {
+        await updateSettings({ mouse: { ...settings.mouse, enableAperture: false } });
+    }
+
+    // 隐藏鼠标点击特效元素（带 .no-pointer 类的 mojs 动画），
+    // 避免它们被截入截图画面
+    const noPointerEls = document.querySelectorAll('.no-pointer') as NodeListOf<HTMLElement>;
+    const prevDisplays: string[] = [];
+    noPointerEls.forEach((el, i) => {
+        prevDisplays[i] = el.style.display;
+        el.style.display = 'none';
+    });
+
+    // 隐藏系统鼠标光标，避免截图中包含光标
+    const prevCursor = document.body.style.cursor;
+    document.body.style.cursor = 'none';
+
     try {
         setIsCapturing(true);
         
@@ -1030,6 +1051,17 @@ function App() {
         console.log('Full error:', error);
         setSnackbar({ open: true, message: `截图失败: ${errorMsg}` });
         setAppMode('draw');
+    } finally {
+        // 恢复鼠标点击特效元素的显示状态
+        noPointerEls.forEach((el, i) => {
+            el.style.display = prevDisplays[i] || '';
+        });
+        // 恢复系统鼠标光标
+        document.body.style.cursor = prevCursor;
+        // 恢复鼠标光圈设置
+        if (prevApertureEnabled) {
+            await updateSettings({ mouse: { ...settings.mouse, enableAperture: true } });
+        }
     }
   }, [getBoundingRect, screenshotShape, circleCenter, circleRadius, freehandPoints]);
 

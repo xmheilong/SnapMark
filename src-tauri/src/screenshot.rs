@@ -3,6 +3,30 @@ use std::io::Cursor;
 use tauri::State;
 use base64::Engine;
 
+#[cfg(windows)]
+fn hide_cursor() {
+    for _ in 0..10 {
+        unsafe {
+            let _ = windows::Win32::UI::WindowsAndMessaging::ShowCursor(false);
+        }
+    }
+}
+
+#[cfg(windows)]
+fn show_cursor() {
+    for _ in 0..10 {
+        unsafe {
+            let _ = windows::Win32::UI::WindowsAndMessaging::ShowCursor(true);
+        }
+    }
+}
+
+#[cfg(not(windows))]
+fn hide_cursor() {}
+
+#[cfg(not(windows))]
+fn show_cursor() {}
+
 #[tauri::command]
 pub async fn capture_region(
     x: i32,
@@ -14,38 +38,46 @@ pub async fn capture_region(
         return Err("选区尺寸过小（最小 10×10）".to_string());
     }
 
-    let screens = Screen::all().map_err(|e| format!("获取屏幕列表失败: {}", e))?;
+    hide_cursor();
 
-    if screens.is_empty() {
-        return Err("未检测到显示器".to_string());
-    }
+    let result = (|| -> Result<Vec<u8>, String> {
+        let screens = Screen::all().map_err(|e| format!("获取屏幕列表失败: {}", e))?;
 
-    let target_screen = screens
-        .iter()
-        .find(|screen| {
-            let info = &screen.display_info;
-            x >= info.x
-                && x < info.x + info.width as i32
-                && y >= info.y
-                && y < info.y + info.height as i32
-        })
-        .ok_or("坐标不在任何显示器范围内")?;
+        if screens.is_empty() {
+            return Err("未检测到显示器".to_string());
+        }
 
-    let info = &target_screen.display_info;
-    let local_x = x - info.x;
-    let local_y = y - info.y;
+        let target_screen = screens
+            .iter()
+            .find(|screen| {
+                let info = &screen.display_info;
+                x >= info.x
+                    && x < info.x + info.width as i32
+                    && y >= info.y
+                    && y < info.y + info.height as i32
+            })
+            .ok_or("坐标不在任何显示器范围内")?;
 
-    let image = target_screen
-        .capture_area(local_x, local_y, width, height)
-        .map_err(|e| format!("截图失败: {}", e))?;
+        let info = &target_screen.display_info;
+        let local_x = x - info.x;
+        let local_y = y - info.y;
 
-    let mut png_data = Vec::new();
-    let mut cursor = Cursor::new(&mut png_data);
-    image
-        .write_to(&mut cursor, screenshots::image::ImageOutputFormat::Png)
-        .map_err(|e| format!("编码 PNG 失败: {}", e))?;
+        let image = target_screen
+            .capture_area(local_x, local_y, width, height)
+            .map_err(|e| format!("截图失败: {}", e))?;
 
-    Ok(png_data)
+        let mut png_data = Vec::new();
+        let mut cursor = Cursor::new(&mut png_data);
+        image
+            .write_to(&mut cursor, screenshots::image::ImageOutputFormat::Png)
+            .map_err(|e| format!("编码 PNG 失败: {}", e))?;
+
+        Ok(png_data)
+    })();
+
+    show_cursor();
+
+    result
 }
 
 #[tauri::command]
@@ -60,41 +92,49 @@ pub async fn capture_and_copy_to_clipboard(
         return Err("选区尺寸过小（最小 10×10）".to_string());
     }
 
-    let screens = Screen::all().map_err(|e| format!("获取屏幕列表失败: {}", e))?;
+    hide_cursor();
 
-    if screens.is_empty() {
-        return Err("未检测到显示器".to_string());
-    }
+    let result = (|| -> Result<(), String> {
+        let screens = Screen::all().map_err(|e| format!("获取屏幕列表失败: {}", e))?;
 
-    let target_screen = screens
-        .iter()
-        .find(|screen| {
-            let info = &screen.display_info;
-            x >= info.x
-                && x < info.x + info.width as i32
-                && y >= info.y
-                && y < info.y + info.height as i32
-        })
-        .ok_or("坐标不在任何显示器范围内")?;
+        if screens.is_empty() {
+            return Err("未检测到显示器".to_string());
+        }
 
-    let info = &target_screen.display_info;
-    let local_x = x - info.x;
-    let local_y = y - info.y;
+        let target_screen = screens
+            .iter()
+            .find(|screen| {
+                let info = &screen.display_info;
+                x >= info.x
+                    && x < info.x + info.width as i32
+                    && y >= info.y
+                    && y < info.y + info.height as i32
+            })
+            .ok_or("坐标不在任何显示器范围内")?;
 
-    let image = target_screen
-        .capture_area(local_x, local_y, width, height)
-        .map_err(|e| format!("截图失败: {}", e))?;
+        let info = &target_screen.display_info;
+        let local_x = x - info.x;
+        let local_y = y - info.y;
 
-    let mut png_data = Vec::new();
-    let mut cursor = Cursor::new(&mut png_data);
-    image
-        .write_to(&mut cursor, screenshots::image::ImageOutputFormat::Png)
-        .map_err(|e| format!("编码 PNG 失败: {}", e))?;
+        let image = target_screen
+            .capture_area(local_x, local_y, width, height)
+            .map_err(|e| format!("截图失败: {}", e))?;
 
-    let png_base64 = base64::engine::general_purpose::STANDARD.encode(&png_data);
-    clipboard.write_image_base64(png_base64).map_err(|e| format!("复制到剪贴板失败: {}", e))?;
+        let mut png_data = Vec::new();
+        let mut cursor = Cursor::new(&mut png_data);
+        image
+            .write_to(&mut cursor, screenshots::image::ImageOutputFormat::Png)
+            .map_err(|e| format!("编码 PNG 失败: {}", e))?;
 
-    Ok(())
+        let png_base64 = base64::engine::general_purpose::STANDARD.encode(&png_data);
+        clipboard.write_image_base64(png_base64).map_err(|e| format!("复制到剪贴板失败: {}", e))?;
+
+        Ok(())
+    })();
+
+    show_cursor();
+
+    result
 }
 
 #[tauri::command]
