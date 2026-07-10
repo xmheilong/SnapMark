@@ -3,10 +3,10 @@
 </p>
 
 <p align="center">
-  <img src="public/penio.png" alt="Penio Logo" width="120" height="120">
+  <img src="public/snapmark.png" alt="SnapMark Logo" width="120" height="120">
 </p>
 
-<h1 align="center">Penio</h1>
+<h1 align="center">SnapMark</h1>
 
 <p align="center">
   <strong>더 쿨하게, 더 화려하게, 더 생동감 있게</strong>
@@ -70,11 +70,11 @@
   </a>
 
 - **macOS**:
-  - Apple Silicon (M1/M2/M3 등): `Penio_x.x.x_aarch64.dmg`
-  - Intel 칩: `Penio_x.x.x_x64.dmg`
+  - Apple Silicon (M1/M2/M3 등): `SnapMark_x.x.x_aarch64.dmg`
+  - Intel 칩: `SnapMark_x.x.x_x64.dmg`
 - **Linux**:
-  - ARM 칩: `Penio_x.x.x_aarch64.deb` / `Penio_x.x.x_aarch64.AppImage` / `Penio_x.x.x_aarch64.rpm`
-  - x64 칩: `Penio_x.x.x_amd64.deb` / `Penio_x.x.x_amd64.AppImage` / `Penio_x.x.x_amd64.rpm`
+  - ARM 칩: `SnapMark_x.x.x_aarch64.deb` / `SnapMark_x.x.x_aarch64.AppImage` / `SnapMark_x.x.x_aarch64.rpm`
+  - x64 칩: `SnapMark_x.x.x_amd64.deb` / `SnapMark_x.x.x_amd64.AppImage` / `SnapMark_x.x.x_amd64.rpm`
 
 ---
 
@@ -169,7 +169,7 @@
 ### 프로젝트 구조
 
 ```
-penio/
+snapmark/
 ├── src/                    # 프론트엔드 소스 코드
 │   ├── components/         # React 컴포넌트
 │   ├── hooks/              # 커스텀 Hooks

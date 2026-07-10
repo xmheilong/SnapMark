@@ -115,7 +115,7 @@ function 关于页面() {
                 {/* 应用Logo */}
                 <Box
                     component="img"
-                    src="/penio.png"
+                    src="/snapmark.png"
                     alt={appName}
                     sx={{
                         width: '6rem',

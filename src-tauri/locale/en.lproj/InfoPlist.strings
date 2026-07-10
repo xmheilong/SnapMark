@@ -1,12 +1,12 @@
 /* Localized versions of Info.plist keys */
 
-CFBundleName = "Penio";
-CFBundleDisplayName = "Penio";
-CFBundleGetInfoString = "Penio Screen Drawing Tool";
+CFBundleName = "SnapMark";
+CFBundleDisplayName = "SnapMark";
+CFBundleGetInfoString = "SnapMark Screen Drawing Tool";
 NSHumanReadableCopyright = "FioFio Copyright © 2026";
 
 /* Privacy - Accessibility Usage Description */
-NSAccessibilityUsageDescription = "Penio needs accessibility permission to monitor global mouse and keyboard events for screen drawing and gesture recognition.";
+NSAccessibilityUsageDescription = "SnapMark needs accessibility permission to monitor global mouse and keyboard events for screen drawing and gesture recognition.";
 
 /* Privacy - Input Monitoring Usage Description */
-NSInputMonitoringUsageDescription = "Penio needs input monitoring permission to capture mouse and keyboard input for real-time drawing functionality.";
+NSInputMonitoringUsageDescription = "SnapMark needs input monitoring permission to capture mouse and keyboard input for real-time drawing functionality.";

@@ -42,7 +42,7 @@ pub fn create_tray(app: &App) -> tauri::Result<()> {
     };
 
     // 构建托盘图标，使用与前端相同的ID，避免重复创建
-    let _tray = TrayIconBuilder::with_id("PENIO_TRAY")
+    let _tray = TrayIconBuilder::with_id("SNAPMARK_TRAY")
         .icon(icon)
         .tooltip("SnapMark")
         .menu(&menu)

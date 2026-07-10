@@ -25,7 +25,7 @@ export interface TrayMenuItem {
 export type TrayMenuHandler = (menuId: string) => void | Promise<void>;
 
 
-const TRAY_ID = "PENIO_TRAY"
+const TRAY_ID = "SNAPMARK_TRAY"
 /**
  * 托盘 Hook
  * 在 JS 中创建和管理系统托盘

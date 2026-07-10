@@ -3,10 +3,10 @@
 </p>
 
 <p align="center">
-  <img src="public/penio.png" alt="Penio Logo" width="120" height="120">
+  <img src="public/snapmark.png" alt="SnapMark Logo" width="120" height="120">
 </p>
 
-<h1 align="center">Penio</h1>
+<h1 align="center">SnapMark</h1>
 
 <p align="center">
   <strong>Plus cool, plus flashy, plus dynamique</strong>
@@ -70,11 +70,11 @@ Visitez la page [Releases](https://github.com/xmheilong/SnapMark/releases) pour 
   </a>
 
 - **macOS** :
-  - Apple Silicon (M1/M2/M3, etc.) : `Penio_x.x.x_aarch64.dmg`
-  - Puces Intel : `Penio_x.x.x_x64.dmg`
+  - Apple Silicon (M1/M2/M3, etc.) : `SnapMark_x.x.x_aarch64.dmg`
+  - Puces Intel : `SnapMark_x.x.x_x64.dmg`
 - **Linux** :
-  - Puces ARM : `Penio_x.x.x_aarch64.deb` / `Penio_x.x.x_aarch64.AppImage` / `Penio_x.x.x_aarch64.rpm`
-  - Puces x64 : `Penio_x.x.x_amd64.deb` / `Penio_x.x.x_amd64.AppImage` / `Penio_x.x.x_amd64.rpm`
+  - Puces ARM : `SnapMark_x.x.x_aarch64.deb` / `SnapMark_x.x.x_aarch64.AppImage` / `SnapMark_x.x.x_aarch64.rpm`
+  - Puces x64 : `SnapMark_x.x.x_amd64.deb` / `SnapMark_x.x.x_amd64.AppImage` / `SnapMark_x.x.x_amd64.rpm`
 
 ---
 
@@ -169,7 +169,7 @@ Supporte le chinois (simplifié/traditionnel), l'anglais, le japonais, le corée
 ### Structure du projet
 
 ```
-penio/
+snapmark/
 ├── src/                    # Code source frontend
 │   ├── components/         # Composants React
 │   ├── hooks/              # Hooks personnalisés

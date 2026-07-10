@@ -304,6 +304,7 @@ import { ContextMenu, CONTEXT_MENU_SEPARATOR } from "./ContextMenu";
 import LayerUI from "./LayerUI";
 import { Toast } from "./Toast";
 import { actionToggleViewMode } from "../actions/actionToggleViewMode";
+import { actionClearCanvas } from "../actions";
 import {
   dataURLToFile,
   dataURLToString,
@@ -4551,7 +4552,8 @@ class App extends React.Component<AppProps, AppState> {
         event.code === "KeyQ" ||
         event.key === KEYS.DELETE)
       ) {
-        editorJotaiStore.set(activeConfirmDialogAtom, "clearCanvas");
+        this.actionManager.executeAction(actionClearCanvas);
+        event.preventDefault();
       }
 
       // eye dropperls

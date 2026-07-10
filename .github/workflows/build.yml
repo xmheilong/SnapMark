@@ -65,7 +65,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tagName: v${{ steps.get_version.outputs.version }}
-          releaseName: 'Penio v${{ steps.get_version.outputs.version }}'
+          releaseName: 'SnapMark v${{ steps.get_version.outputs.version }}'
           releaseBody: 'See the assets to download this version and install.'
           releaseDraft: false          # 改为 false，自动发布正式版
           prerelease: false

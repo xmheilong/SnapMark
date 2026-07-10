@@ -2,7 +2,7 @@ fn main() {
     let mut windows = tauri_build::WindowsAttributes::new();
     windows = windows.app_manifest(r#"
     <assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
-      <assemblyIdentity version="1.0.0.0" name="penio.app" type="win32" />
+      <assemblyIdentity version="1.0.0.0" name="snapmark.app" type="win32" />
       <compatibility xmlns="urn:schemas-microsoft-com:compatibility.v1">
         <application>
           <supportedOS Id="{8e0f7a12-bfb3-4fe8-b9a5-48fd50a15a9a}" /><!-- Windows 10 -->

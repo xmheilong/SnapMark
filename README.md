@@ -11,10 +11,10 @@
 </p>
 
 <p align="center">
-  <img src="public/penio.png" alt="Penio Logo" width="120" height="120">
+  <img src="public/snapmark.png" alt="SnapMark Logo" width="120" height="120">
 </p>
 
-<h1 align="center">Penio</h1>
+<h1 align="center">SnapMark</h1>
 
 <p align="center">
   <strong>更酷、更炫、更灵动</strong>
@@ -78,11 +78,11 @@
   </a>
 
 - **macOS**:
-  - Apple Silicon (M1/M2/M3等): `Penio_x.x.x_aarch64.dmg`
-  - Intel 芯片: `Penio_x.x.x_x64.dmg`
+  - Apple Silicon (M1/M2/M3等): `SnapMark_x.x.x_aarch64.dmg`
+  - Intel 芯片: `SnapMark_x.x.x_x64.dmg`
 - **Linux**:
-  - ARM 芯片: `Penio_x.x.x_aarch64.deb` / `Penio_x.x.x_aarch64.AppImage` / `Penio_x.x.x_aarch64.rpm`
-  - x64 芯片: `Penio_x.x.x_amd64.deb` / `Penio_x.x.x_amd64.AppImage` / `Penio_x.x.x_amd64.rpm`
+  - ARM 芯片: `SnapMark_x.x.x_aarch64.deb` / `SnapMark_x.x.x_aarch64.AppImage` / `SnapMark_x.x.x_aarch64.rpm`
+  - x64 芯片: `SnapMark_x.x.x_amd64.deb` / `SnapMark_x.x.x_amd64.AppImage` / `SnapMark_x.x.x_amd64.rpm`
 
 ---
 
@@ -178,7 +178,7 @@
 ### 项目结构
 
 ```
-penio/
+snapmark/
 ├── src/                    # 前端源码
 │   ├── components/         # React 组件
 │   ├── hooks/              # 自定义 Hooks

@@ -1,6 +1,6 @@
 # 截图功能设计文档（Screen Capture Feature）
 
-> SnapMark 在 Penio 屏幕标注基础上新增的截图功能设计规格。
+> SnapMark 在上游屏幕标注基础上新增的截图功能设计规格。
 > 本文档是后续开发的"单一真相之源"——任何实现与本文档冲突时，以本文档为准。
 
 ---
@@ -13,14 +13,14 @@
 |----|----|
 | 项目名 | **SnapMark** |
 | 上游 | [xmheilong/SnapMark](https://github.com/xmheilong/SnapMark) (MIT License) |
-| 仓库 | `github.com/xmheilong/Penio`（GitHub 仓库名沿用 Penio 是正常的，仓库名 ≠ 产品名） |
+| 仓库 | `github.com/xmheilong/Penio`（GitHub 仓库名沿用上游旧名，仓库名 ≠ 产品名） |
 | 应用 identifier | `io.github.xmheilong.snapmark` |
 | 协议 | MIT（保留上游）+ NOTICE 归属声明 |
 | 维护者 | xmheilong |
 
 ### 1.2 产品定位
 
-SnapMark = Penio 的全部屏幕标注能力 + **矩形截图 → 剪贴板**。
+SnapMark = 上游的全部屏幕标注能力 + **矩形截图 → 剪贴板**。
 
 > 定位关键词：演示、教学、录屏场景的**截图 + 标注一体化**工具。
 
@@ -58,7 +58,7 @@ SnapMark = Penio 的全部屏幕标注能力 + **矩形截图 → 剪贴板**。
 │                                                   │
 │   ┌─────────────┐         ┌──────────────┐        │
 │   │  标注模式    │  ←→    │  截图模式     │        │
-│   │  (Penio 原) │ 互斥   │  (本功能新增) │        │
+│   │  (上游原) │ 互斥   │  (本功能新增) │        │
 │   └─────────────┘         └──────────────┘        │
 └──────────────────────────────────────────────────┘
 ```
@@ -134,7 +134,7 @@ SnapMark = Penio 的全部屏幕标注能力 + **矩形截图 → 剪贴板**。
 |------|------|
 | 遮罩底色 | `rgba(0, 0, 0, 0.4)`（半透明黑） |
 | 选区内 | 原画面正常显示（不被遮罩覆盖） |
-| 选区边框 | 2px 高亮（如 `#4ecdc4`，与 Penio 品牌色一致） |
+| 选区边框 | 2px 高亮（如 `#4ecdc4`，与品牌色一致） |
 | 尺寸文字 | 选区左上角或居中：`1920 × 1080` |
 | 提示文字 | 覆盖层底部居中，白色，半透明背景 |
 | 退出按钮 | 屏幕右上角小圆角按钮 |
@@ -164,7 +164,7 @@ SnapMark = Penio 的全部屏幕标注能力 + **矩形截图 → 剪贴板**。
 
 理由：
 - 简化状态管理
-- Penio 标注窗口是 transparent 的，理论上不应被截到
+- 上游标注窗口是 transparent 的，理论上不应被截到
 - 用户明确要求"保持截图前状态一样"
 
 ### 5.2 已知风险与兜底
@@ -336,7 +336,7 @@ bun run tauri dev
 按对话顺序记录的关键决策，便于追溯：
 
 1. **项目定位**：fork → SnapMark，开源，不回 PR 上游
-2. **命名规则**：应用名 SnapMark，identifier `io.github.xmheilong.snapmark`，仓库名沿用 Penio
+2. **命名规则**：应用名 SnapMark，identifier `io.github.xmheilong.snapmark`，仓库名沿用上游旧名
 3. **范围收窄**：Windows only / 矩形 / 剪贴板 / 开关触发
 4. **模式关系**：截图模式与标注模式互斥
 5. **开关位置**：主窗口设置页（新建"截图"Tab）
