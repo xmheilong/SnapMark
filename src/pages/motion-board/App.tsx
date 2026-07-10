@@ -761,15 +761,18 @@ function App() {
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
 
+    const clampX = Math.max(0, Math.min(x, rect.width));
+    const clampY = Math.max(0, Math.min(y, rect.height));
+
     if (screenshotShape === 'rectangle') {
-      const width = Math.abs(x - dragStart.x);
-      const height = Math.abs(y - dragStart.y);
+      const width = Math.abs(clampX - dragStart.x);
+      const height = Math.abs(clampY - dragStart.y);
       const MIN_SIZE = 10;
       
       if (width >= MIN_SIZE && height >= MIN_SIZE) {
           setSelection({
-              x: Math.min(x, dragStart.x),
-              y: Math.min(y, dragStart.y),
+              x: Math.min(clampX, dragStart.x),
+              y: Math.min(clampY, dragStart.y),
               width,
               height,
           });
@@ -778,13 +781,23 @@ function App() {
       if (circleCenter) {
         const dx = x - circleCenter.x;
         const dy = y - circleCenter.y;
-        const radius = Math.sqrt(dx * dx + dy * dy);
+        const rawRadius = Math.sqrt(dx * dx + dy * dy);
+        
+        const maxRadius = Math.min(
+          circleCenter.x,
+          circleCenter.y,
+          rect.width - circleCenter.x,
+          rect.height - circleCenter.y
+        );
+        
+        const radius = Math.min(rawRadius, maxRadius);
+        
         if (radius >= 10) {
           setCircleRadius(radius);
         }
       }
     } else if (screenshotShape === 'freehand') {
-      setFreehandPoints(prev => [...prev, { x, y }]);
+      setFreehandPoints(prev => [...prev, { x: clampX, y: clampY }]);
     }
   }, [appMode, isDragging, dragStart, screenshotShape, circleCenter]);
 
@@ -802,6 +815,26 @@ function App() {
         handleCapture();
     }
   }, [appMode, isDragging, selection, screenshotShape, circleRadius, freehandPoints]);
+
+  const handleMouseUpRef = useRef(handleMouseUp);
+  handleMouseUpRef.current = handleMouseUp;
+
+  const handleMouseLeave = useCallback(() => {
+    if (!isScreenshotMode || !isDragging) return;
+    // 鼠标离开窗口时不取消拖动——选区冻结在屏幕边缘
+    // 用户松手时通过 window mouseup 监听器触发截图
+  }, [isScreenshotMode, isDragging]);
+
+  // 当 isDragging 为 true 时，监听 window 级 mouseup 事件
+  // 确保鼠标离开窗口后在扩展屏侧松手也能触发截图
+  useEffect(() => {
+    if (!isDragging) return;
+    const onWindowMouseUp = () => {
+      handleMouseUpRef.current();
+    };
+    window.addEventListener('mouseup', onWindowMouseUp);
+    return () => window.removeEventListener('mouseup', onWindowMouseUp);
+  }, [isDragging]);
 
   const getBoundingRect = useCallback(() => {
     if (screenshotShape === 'rectangle' && selection) {
@@ -1135,7 +1168,7 @@ function App() {
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
-          onMouseLeave={handleMouseUp}
+          onMouseLeave={handleMouseLeave}
         >
           {!isCapturing && (
             <>

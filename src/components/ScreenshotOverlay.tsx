@@ -170,13 +170,16 @@ export function ScreenshotOverlay({ onExit }: { onExit: () => void }) {
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
 
-        const width = Math.abs(x - dragStart.x);
-        const height = Math.abs(y - dragStart.y);
+        const clampX = Math.max(0, Math.min(x, rect.width));
+        const clampY = Math.max(0, Math.min(y, rect.height));
+
+        const width = Math.abs(clampX - dragStart.x);
+        const height = Math.abs(clampY - dragStart.y);
         
         if (width >= MIN_SIZE && height >= MIN_SIZE) {
             setSelection({
-                x: Math.min(x, dragStart.x),
-                y: Math.min(y, dragStart.y),
+                x: Math.min(clampX, dragStart.x),
+                y: Math.min(clampY, dragStart.y),
                 width,
                 height,
             });
